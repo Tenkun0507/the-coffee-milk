@@ -5,7 +5,7 @@
 
   const els = {
     targetSwatch: $('#targetSwatch'), roundText: $('#roundText'), roundIcons: $('#roundIcons'),
-    totalScore: $('#totalScore'), soundBtn: $('#soundBtn'), vessel: $('#vessel'), liquid: $('#liquid'),
+    totalScore: $('#totalScore'), soundBtn: $('#soundBtn'), titleBtn: $('#titleBtn'), vessel: $('#vessel'), liquid: $('#liquid'),
     measureMarks: $('#measureMarks'), roundName: $('#roundName'), coffeeBtn: $('#coffeeBtn'), milkBtn: $('#milkBtn'),
     coffeeUse: $('#coffeeUse'), milkUse: $('#milkUse'), pourStream: $('#pourStream'), toast: $('#toast'),
     startModal: $('#startModal'), startBtn: $('#startBtn'), resultModal: $('#resultModal'), resultKicker: $('#resultKicker'),
@@ -15,11 +15,11 @@
   };
 
   const ROUND_DATA = [
-    { key:'beaker', icon:'🧪', name:'BEAKER', rate:0.148, wobble:0.003, marks:true, blind:false },
-    { key:'straight', icon:'🥃', name:'STRAIGHT GLASS', rate:0.148, wobble:0.004, marks:false, blind:false },
-    { key:'tall', icon:'🥤', name:'TALL GLASS', rate:0.145, wobble:0.004, marks:false, blind:false },
-    { key:'cocktail', icon:'🍸', name:'COCKTAIL GLASS', rate:0.142, wobble:0.005, marks:false, blind:false },
-    { key:'opaque', icon:'◼︎', name:'BLIND GLASS', rate:0.145, wobble:0.004, marks:false, blind:true }
+    { key:'beaker', name:'BEAKER', rate:0.148, wobble:0.003, marks:true, blind:false },
+    { key:'straight', name:'STRAIGHT GLASS', rate:0.148, wobble:0.004, marks:false, blind:false },
+    { key:'tall', name:'SLIM GLASS', rate:0.145, wobble:0.004, marks:false, blind:false },
+    { key:'cocktail', name:'COCKTAIL GLASS', rate:0.142, wobble:0.005, marks:false, blind:false },
+    { key:'opaque', name:'BLIND GLASS', rate:0.145, wobble:0.004, marks:false, blind:true }
   ];
 
   const state = {
@@ -90,7 +90,10 @@
       const d = document.createElement('div');
       d.className = 'round-icon';
       d.dataset.index = i+1;
-      d.textContent = r.icon;
+      const silhouette = document.createElement('span');
+      silhouette.className = `round-vessel-icon mini-${r.key}`;
+      silhouette.setAttribute('aria-hidden','true');
+      d.appendChild(silhouette);
       els.roundIcons.appendChild(d);
     });
   }
@@ -107,17 +110,13 @@
     els.measureMarks.style.display = show ? 'block' : 'none';
     if(!show) return;
 
-    // Large, high-contrast marks. Major marks at 20/40/60/80, minor marks every 10.
-    for(let p=10;p<=80;p+=10){
+    // Four clean major marks only. This avoids stray upper ticks around the beaker rim.
+    [20,40,60,80].forEach((p)=>{
       const s = document.createElement('span');
       s.style.bottom = `${p}%`;
-      if(p % 20 === 0){
-        s.dataset.label = `${p}`;
-      }else{
-        s.classList.add('minor');
-      }
+      s.dataset.label = `${p}`;
       els.measureMarks.appendChild(s);
-    }
+    });
   }
 
   function resetRoundState(){
@@ -224,7 +223,6 @@
     badge.textContent = 'USED';
     els.pourStream.className = 'pour-stream hidden';
     stopPourSound();
-    playPourStop();
     if(state.used.coffee && state.used.milk && !state.overflow){
       setTimeout(finishRound, 280);
     }
@@ -416,57 +414,21 @@
   }
 
   function startPourSound(type){
-    if(!state.soundOn || !state.audio || !state.noiseBuffer) return;
+    if(!state.soundOn || !state.audio) return;
     stopPourSound();
     const ctx = state.audio;
 
-    // Gentle trickling sound: mostly soft tonal droplets, with only a tiny amount of filtered water noise.
-    const master = ctx.createGain();
-    master.gain.setValueAtTime(0.0001,ctx.currentTime);
-    master.gain.exponentialRampToValueAtTime(0.028,ctx.currentTime+0.04);
-
+    // No ordinary pouring noise. A quiet tonal cue fades in only near the brim.
     const osc = ctx.createOscillator();
     osc.type = 'sine';
-    osc.frequency.value = 170;
-    const oscGain = ctx.createGain();
-    oscGain.gain.value = type === 'coffee' ? 0.24 : 0.20;
+    osc.frequency.value = 175;
 
-    const shimmer = ctx.createOscillator();
-    shimmer.type = 'sine';
-    shimmer.frequency.value = 300;
-    const shimmerGain = ctx.createGain();
-    shimmerGain.gain.value = type === 'coffee' ? 0.055 : 0.07;
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001,ctx.currentTime);
 
-    const noise = ctx.createBufferSource();
-    noise.buffer = state.noiseBuffer;
-    noise.loop = true;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = type === 'coffee' ? 520 : 720;
-    filter.Q.value = 1.8;
-    const noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.075;
-
-    // A slow amplitude ripple creates a "choro-choro" trickle instead of a constant hiss.
-    const lfo = ctx.createOscillator();
-    lfo.type = 'sine';
-    lfo.frequency.value = type === 'coffee' ? 6.2 : 7.1;
-    const lfoGain = ctx.createGain();
-    lfoGain.gain.value = 0.0065;
-    const trickleGain = ctx.createGain();
-    trickleGain.gain.value = 0.018;
-    lfo.connect(lfoGain).connect(trickleGain.gain);
-
-    osc.connect(oscGain).connect(trickleGain);
-    shimmer.connect(shimmerGain).connect(trickleGain);
-    noise.connect(filter).connect(noiseGain).connect(trickleGain);
-    trickleGain.connect(master).connect(ctx.destination);
-
+    osc.connect(master).connect(ctx.destination);
     osc.start();
-    shimmer.start();
-    noise.start();
-    lfo.start();
-    state.pourAudio = { master, osc, shimmer, noise, filter, oscGain, shimmerGain, noiseGain, lfo, trickleGain };
+    state.pourAudio = { master, osc };
     updatePourSound();
   }
 
@@ -476,14 +438,14 @@
     const ctx = state.audio;
     const fill = clamp(fillRatio(),0,0.999);
 
-    // Clear fill cue: gentle while low, increasingly high-pitched near the brim.
+    // Preserve the rising-pitch fullness cue, but keep the game silent below ~68% fill.
     const pitch = 175 + 1225 * Math.pow(fill,2.25);
     p.osc.frequency.setTargetAtTime(pitch,ctx.currentTime,0.025);
-    p.shimmer.frequency.setTargetAtTime(pitch*1.72,ctx.currentTime,0.03);
-    p.filter.frequency.setTargetAtTime(480 + 1250*Math.pow(fill,1.65),ctx.currentTime,0.04);
 
-    // Keep the sound delicate; pitch, not loudness, is the main clue.
-    p.master.gain.setTargetAtTime(0.026 + 0.006*Math.pow(fill,2),ctx.currentTime,0.04);
+    const threshold = 0.68;
+    const near = clamp((fill-threshold)/(1-threshold),0,1);
+    const gain = near <= 0 ? 0.0001 : 0.006 + 0.020*Math.pow(near,1.45);
+    p.master.gain.setTargetAtTime(gain,ctx.currentTime,0.035);
   }
 
   function stopPourSound(){
@@ -492,18 +454,14 @@
     const ctx = state.audio;
     try{
       p.master.gain.cancelScheduledValues(ctx.currentTime);
-      p.master.gain.setTargetAtTime(0.0001,ctx.currentTime,0.018);
-      p.osc.stop(ctx.currentTime+0.09);
-      p.shimmer?.stop(ctx.currentTime+0.09);
-      p.noise.stop(ctx.currentTime+0.09);
-      p.lfo?.stop(ctx.currentTime+0.09);
+      p.master.gain.setTargetAtTime(0.0001,ctx.currentTime,0.015);
+      p.osc.stop(ctx.currentTime+0.07);
     }catch(_){ }
     state.pourAudio = null;
   }
 
   function playPourStop(){
-    const near = clamp(fillRatio(),0,1);
-    tone(180 + 620*Math.pow(near,2),.07,'sine',.018);
+    // Intentionally silent. Fullness feedback is provided only while nearing the brim.
   }
 
   function playOverflow(){
@@ -544,16 +502,35 @@
 
   function toggleSound(){
     state.soundOn = !state.soundOn;
-    els.soundBtn.textContent = state.soundOn ? '🔊' : '🔇';
+    els.soundBtn.textContent = state.soundOn ? 'SOUND ON' : 'SOUND OFF';
+    els.soundBtn.classList.toggle('off', !state.soundOn);
     if(!state.soundOn) stopPourSound();
     if(state.soundOn){ ensureAudio(); startMusic(); }
   }
 
   function startGame(){
     ensureAudio();
+    els.titleBtn.hidden = false;
     els.startModal.classList.remove('open');
     setupRound({animate:true});
     playTransition();
+  }
+
+  function returnToTitle(){
+    if(state.pouring) state.pouring = null;
+    stopPourSound();
+    els.pourStream.className = 'pour-stream hidden';
+    els.resultModal.classList.remove('open');
+    els.finalModal.classList.remove('open');
+    state.round = 0;
+    state.total = 0;
+    state.roundScores = [];
+    state.overflow = false;
+    state.finished = false;
+    state.transitioning = false;
+    setupRound({animate:false});
+    els.startModal.classList.add('open');
+    els.titleBtn.hidden = true;
   }
 
   setupRoundIcons();
@@ -563,6 +540,7 @@
   els.nextBtn.addEventListener('click',nextRound);
   els.retryBtn.addEventListener('click',resetGame);
   els.soundBtn.addEventListener('click',toggleSound);
+  els.titleBtn.addEventListener('click',returnToTitle);
   window.addEventListener('blur',()=>{ if(state.pouring) endPour(state.pouring); });
   document.addEventListener('visibilitychange',()=>{ if(document.hidden && state.pouring) endPour(state.pouring); });
 

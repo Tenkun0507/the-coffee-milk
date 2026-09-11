@@ -5,26 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
   <meta name="theme-color" content="#f2b45c" />
   <title>THE COFFEE MILK</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20260911e" />
 </head>
 <body>
   <div id="app" class="app">
     <div class="sun"></div>
     <div class="window-view" aria-hidden="true">
-      <div class="sea"></div><div class="island"></div><div class="window-palm">🌴</div>
+      <div class="sea"></div><div class="island"></div><div class="window-palm"></div>
     </div>
     <div class="kitchen-shelf shelf-a" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="kitchen-shelf shelf-b" aria-hidden="true"><i></i><i></i></div>
-    <div class="leaf-deco leaf-left" aria-hidden="true">🌿</div>
-    <div class="leaf-deco leaf-right" aria-hidden="true">🌿</div>
+    <div class="leaf-deco leaf-left" aria-hidden="true"></div>
+    <div class="leaf-deco leaf-right" aria-hidden="true"></div>
+
+    <div class="corner-controls" aria-label="game controls">
+      <button id="titleBtn" class="hud-btn title-btn" type="button" hidden>TITLE</button>
+      <button id="soundBtn" class="hud-btn sound-btn" type="button" aria-label="sound on/off">SOUND ON</button>
+    </div>
 
     <header class="topbar">
-      <div class="brand" aria-label="THE COFFEE MILK">
-        <span class="brand-the">THE</span>
-        <span class="brand-main">COFFEE MILK</span>
-        <span class="brand-sub">MIX · MATCH · PERFECT!</span>
-      </div>
-
       <section class="target-card" aria-label="target color">
         <div class="target-title">TARGET</div>
         <div class="target-display">
@@ -40,7 +39,6 @@
       <section class="score-card">
         <span>TOTAL SCORE</span>
         <strong id="totalScore">0</strong>
-        <button id="soundBtn" class="sound-btn" type="button" aria-label="sound on/off">🔊</button>
       </section>
     </header>
 
@@ -49,7 +47,7 @@
       <section class="play-board">
         <div class="pour-side">
           <button id="coffeeBtn" class="pour-btn coffee-btn" type="button">
-            <span class="ingredient-icon coffee-icon" aria-hidden="true">☕</span>
+            <span class="ingredient-symbol coffee-symbol" aria-hidden="true"></span>
             <span class="ingredient-name">COFFEE</span>
             <span id="coffeeUse" class="use-badge">1 USE</span>
           </button>
@@ -71,7 +69,7 @@
 
         <div class="pour-side">
           <button id="milkBtn" class="pour-btn milk-btn" type="button">
-            <span class="ingredient-icon milk-icon" aria-hidden="true">🥛</span>
+            <span class="ingredient-symbol milk-symbol" aria-hidden="true"></span>
             <span class="ingredient-name">MILK</span>
             <span id="milkUse" class="use-badge">1 USE</span>
           </button>
@@ -87,10 +85,10 @@
         <h1>THE COFFEE MILK</h1>
         <p>見本の色に合わせながら、溢れないギリギリまで注げ。</p>
         <div class="rule-grid">
-          <div><b>☕ 🥛</b><span>各ボタンは1回だけ</span></div>
-          <div><b>🎨</b><span>色が近いほど高得点</span></div>
-          <div><b>🥤</b><span>満杯に近いほど高得点</span></div>
-          <div><b>💦</b><span>溢れたラウンドは0点</span></div>
+          <div><b>ONE USE</b><span>各ボタンは1回だけ</span></div>
+          <div><b>COLOR</b><span>色が近いほど高得点</span></div>
+          <div><b>VOLUME</b><span>満杯に近いほど高得点</span></div>
+          <div><b>OVERFLOW</b><span>溢れたラウンドは0点</span></div>
         </div>
         <button id="startBtn" class="main-btn" type="button">START MIXING</button>
       </div>
@@ -127,6 +125,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=20260911e"></script>
 </body>
 </html>
