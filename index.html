@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#f7c86f" />
+  <title>THE COFFEE MILK</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <div class="sky-glow"></div>
+    <div class="palm palm-left">🌴</div>
+    <div class="palm palm-right">🌿</div>
+
+    <header class="topbar">
+      <div class="brand" aria-label="THE COFFEE MILK">
+        <div class="brand-the">THE</div>
+        <div class="brand-main">COFFEE MILK</div>
+        <div class="brand-sub">MIX · MATCH · PERFECT!</div>
+      </div>
+
+      <div class="hud-card target-card">
+        <div class="hud-label">TARGET</div>
+        <div id="targetSwatch" class="target-swatch"></div>
+        <div class="target-hint">この色に近づけよう</div>
+      </div>
+
+      <div class="hud-card rounds-card">
+        <div class="round-head">ROUND <span id="roundText">1 / 5</span></div>
+        <div id="roundIcons" class="round-icons" aria-label="round progress"></div>
+      </div>
+
+      <div class="hud-card score-card">
+        <div class="hud-label">TOTAL SCORE</div>
+        <div id="totalScore" class="score-number">0</div>
+        <button id="soundBtn" class="icon-btn" type="button" aria-label="sound on/off">🔊</button>
+      </div>
+    </header>
+
+    <main class="game-stage">
+      <section class="counter-panel">
+        <div class="tropical-note note-left">GOOD COFFEE<br>BRIGHTER DAYS</div>
+        <div class="tropical-note note-right">ISLAND<br>COFFEE LAB</div>
+
+        <div class="pour-column">
+          <button id="coffeeBtn" class="pour-btn coffee-btn" type="button">
+            <span class="pour-icon">☕</span>
+            <span class="pour-name">COFFEE</span>
+            <span id="coffeeUse" class="use-badge">1 USE</span>
+          </button>
+        </div>
+
+        <div class="vessel-zone">
+          <div id="pourStream" class="pour-stream hidden"></div>
+          <div id="vessel" class="vessel beaker" aria-label="drink container">
+            <div id="liquid" class="liquid"></div>
+            <div class="glass-shine"></div>
+            <div id="measureMarks" class="measure-marks"></div>
+            <div id="opaqueCover" class="opaque-cover"></div>
+          </div>
+
+          <div id="fillWrap" class="fill-wrap">
+            <div class="fill-label-row">
+              <span>FILL LEVEL</span>
+              <span id="fillPct">0%</span>
+            </div>
+            <div class="fill-track"><div id="fillBar" class="fill-bar"></div></div>
+          </div>
+
+          <div id="roundInstruction" class="round-instruction">ボタンを長押しして注ごう。離したらその材料はもう使えない！</div>
+        </div>
+
+        <div class="pour-column">
+          <button id="milkBtn" class="pour-btn milk-btn" type="button">
+            <span class="pour-icon">🥛</span>
+            <span class="pour-name">MILK</span>
+            <span id="milkUse" class="use-badge">1 USE</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <div id="startModal" class="modal open">
+      <div class="modal-card start-card">
+        <div class="mini-badge">5 ROUND SCORE ATTACK</div>
+        <h1>THE COFFEE MILK</h1>
+        <p>見本の色に合わせつつ、できるだけギリギリまで注げ。</p>
+        <div class="rule-grid">
+          <div><b>☕ / 🥛</b><span>各1回だけ</span></div>
+          <div><b>🎨</b><span>色が近いほど高得点</span></div>
+          <div><b>🥤</b><span>量が多いほど高得点</span></div>
+          <div><b>💦</b><span>溢れたら0点</span></div>
+        </div>
+        <p class="small-note">PCはクリック長押し、スマホはタッチ長押し。音声は最初の操作後に再生されるよ。</p>
+        <button id="startBtn" class="main-btn" type="button">START MIXING</button>
+      </div>
+    </div>
+
+    <div id="resultModal" class="modal">
+      <div class="modal-card result-card">
+        <div id="resultKicker" class="mini-badge">ROUND RESULT</div>
+        <h2 id="resultTitle">NICE MIX!</h2>
+        <div class="result-main-score"><span id="roundScore">0</span><small> pts</small></div>
+        <div class="result-grid">
+          <div class="metric"><span>COLOR</span><strong id="colorScore">0</strong><small>/100</small></div>
+          <div class="metric multiply">×</div>
+          <div class="metric"><span>VOLUME</span><strong id="volumeScore">0</strong><small>/100</small></div>
+        </div>
+        <div class="result-detail">
+          <div><span>見本</span><b id="targetRatioText">--</b></div>
+          <div><span>完成</span><b id="actualRatioText">--</b></div>
+          <div><span>充填率</span><b id="finalFillText">--</b></div>
+        </div>
+        <button id="nextBtn" class="main-btn" type="button">NEXT ROUND</button>
+      </div>
+    </div>
+
+    <div id="finalModal" class="modal">
+      <div class="modal-card final-card">
+        <div class="mini-badge">FINAL SCORE</div>
+        <h2>COFFEE MILK COMPLETE!</h2>
+        <div id="finalScore" class="final-score">0</div>
+        <div id="rankText" class="rank-text">RANK C</div>
+        <div id="roundBreakdown" class="round-breakdown"></div>
+        <button id="retryBtn" class="main-btn" type="button">PLAY AGAIN</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
