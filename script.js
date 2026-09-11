@@ -15,11 +15,11 @@
   };
 
   const ROUND_DATA = [
-    { key:'beaker', icon:'🧪', name:'BEAKER', rate:0.115, wobble:0.004, marks:true, blind:false },
-    { key:'straight', icon:'🥃', name:'STRAIGHT GLASS', rate:0.115, wobble:0.006, marks:false, blind:false },
-    { key:'tall', icon:'🥤', name:'TALL GLASS', rate:0.112, wobble:0.007, marks:false, blind:false },
-    { key:'cocktail', icon:'🍸', name:'COCKTAIL GLASS', rate:0.109, wobble:0.008, marks:false, blind:false },
-    { key:'opaque', icon:'◼︎', name:'BLIND GLASS', rate:0.112, wobble:0.006, marks:false, blind:true }
+    { key:'beaker', icon:'🧪', name:'BEAKER', rate:0.148, wobble:0.003, marks:true, blind:false },
+    { key:'straight', icon:'🥃', name:'STRAIGHT GLASS', rate:0.148, wobble:0.004, marks:false, blind:false },
+    { key:'tall', icon:'🥤', name:'TALL GLASS', rate:0.145, wobble:0.004, marks:false, blind:false },
+    { key:'cocktail', icon:'🍸', name:'COCKTAIL GLASS', rate:0.142, wobble:0.005, marks:false, blind:false },
+    { key:'opaque', icon:'◼︎', name:'BLIND GLASS', rate:0.145, wobble:0.004, marks:false, blind:true }
   ];
 
   const state = {
@@ -108,7 +108,7 @@
     if(!show) return;
 
     // Large, high-contrast marks. Major marks at 20/40/60/80, minor marks every 10.
-    for(let p=10;p<=90;p+=10){
+    for(let p=10;p<=80;p+=10){
       const s = document.createElement('span');
       s.style.bottom = `${p}%`;
       if(p % 20 === 0){
@@ -420,36 +420,53 @@
     stopPourSound();
     const ctx = state.audio;
 
+    // Gentle trickling sound: mostly soft tonal droplets, with only a tiny amount of filtered water noise.
     const master = ctx.createGain();
     master.gain.setValueAtTime(0.0001,ctx.currentTime);
-    master.gain.exponentialRampToValueAtTime(0.038,ctx.currentTime+0.035);
+    master.gain.exponentialRampToValueAtTime(0.028,ctx.currentTime+0.04);
 
     const osc = ctx.createOscillator();
-    osc.type = type === 'coffee' ? 'triangle' : 'sine';
-    osc.frequency.value = 165;
-
+    osc.type = 'sine';
+    osc.frequency.value = 170;
     const oscGain = ctx.createGain();
-    oscGain.gain.value = type === 'coffee' ? 0.34 : 0.25;
+    oscGain.gain.value = type === 'coffee' ? 0.24 : 0.20;
+
+    const shimmer = ctx.createOscillator();
+    shimmer.type = 'sine';
+    shimmer.frequency.value = 300;
+    const shimmerGain = ctx.createGain();
+    shimmerGain.gain.value = type === 'coffee' ? 0.055 : 0.07;
 
     const noise = ctx.createBufferSource();
     noise.buffer = state.noiseBuffer;
     noise.loop = true;
-
     const filter = ctx.createBiquadFilter();
-    filter.type = type === 'coffee' ? 'bandpass' : 'highpass';
-    filter.frequency.value = type === 'coffee' ? 650 : 1100;
-    filter.Q.value = type === 'coffee' ? 0.7 : 0.5;
-
+    filter.type = 'bandpass';
+    filter.frequency.value = type === 'coffee' ? 520 : 720;
+    filter.Q.value = 1.8;
     const noiseGain = ctx.createGain();
-    noiseGain.gain.value = type === 'coffee' ? 0.72 : 0.48;
+    noiseGain.gain.value = 0.075;
 
-    osc.connect(oscGain).connect(master);
-    noise.connect(filter).connect(noiseGain).connect(master);
-    master.connect(ctx.destination);
+    // A slow amplitude ripple creates a "choro-choro" trickle instead of a constant hiss.
+    const lfo = ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = type === 'coffee' ? 6.2 : 7.1;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.0065;
+    const trickleGain = ctx.createGain();
+    trickleGain.gain.value = 0.018;
+    lfo.connect(lfoGain).connect(trickleGain.gain);
+
+    osc.connect(oscGain).connect(trickleGain);
+    shimmer.connect(shimmerGain).connect(trickleGain);
+    noise.connect(filter).connect(noiseGain).connect(trickleGain);
+    trickleGain.connect(master).connect(ctx.destination);
 
     osc.start();
+    shimmer.start();
     noise.start();
-    state.pourAudio = { master, osc, noise, filter, oscGain, noiseGain };
+    lfo.start();
+    state.pourAudio = { master, osc, shimmer, noise, filter, oscGain, shimmerGain, noiseGain, lfo, trickleGain };
     updatePourSound();
   }
 
@@ -459,14 +476,14 @@
     const ctx = state.audio;
     const fill = clamp(fillRatio(),0,0.999);
 
-    // The pitch is a deliberate gameplay cue: slow rise early, dramatic rise near the brim.
-    // ~170 Hz empty -> ~1.4 kHz at the brink. Round 5 is designed to be judged by this.
-    const pitch = 170 + 1240 * Math.pow(fill,2.35);
-    p.osc.frequency.setTargetAtTime(pitch,ctx.currentTime,0.018);
-    p.filter.frequency.setTargetAtTime(600 + 3200*Math.pow(fill,1.8),ctx.currentTime,0.025);
+    // Clear fill cue: gentle while low, increasingly high-pitched near the brim.
+    const pitch = 175 + 1225 * Math.pow(fill,2.25);
+    p.osc.frequency.setTargetAtTime(pitch,ctx.currentTime,0.025);
+    p.shimmer.frequency.setTargetAtTime(pitch*1.72,ctx.currentTime,0.03);
+    p.filter.frequency.setTargetAtTime(480 + 1250*Math.pow(fill,1.65),ctx.currentTime,0.04);
 
-    // Slightly stronger near the top without becoming painfully loud.
-    p.master.gain.setTargetAtTime(0.034 + 0.012*Math.pow(fill,2),ctx.currentTime,0.03);
+    // Keep the sound delicate; pitch, not loudness, is the main clue.
+    p.master.gain.setTargetAtTime(0.026 + 0.006*Math.pow(fill,2),ctx.currentTime,0.04);
   }
 
   function stopPourSound(){
@@ -477,7 +494,9 @@
       p.master.gain.cancelScheduledValues(ctx.currentTime);
       p.master.gain.setTargetAtTime(0.0001,ctx.currentTime,0.018);
       p.osc.stop(ctx.currentTime+0.09);
+      p.shimmer?.stop(ctx.currentTime+0.09);
       p.noise.stop(ctx.currentTime+0.09);
+      p.lfo?.stop(ctx.currentTime+0.09);
     }catch(_){ }
     state.pourAudio = null;
   }

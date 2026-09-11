@@ -89,3 +89,41 @@ button{font:inherit}
 @media(max-height:680px) and (orientation:landscape){
   .topbar{grid-template-columns:1.18fr .78fr 1fr .58fr;padding:5px 9px}.brand,.target-card,.round-card,.score-card{min-height:86px}.brand-main{font-size:30px}.brand-sub{display:none}.target-card{grid-template-columns:auto 1fr;grid-template-rows:auto 1fr;padding:5px}.target-title{grid-column:1/3;font-size:11px;padding:2px 9px}.target-display{width:58px;border-width:3px;box-shadow:0 0 0 3px #f1c66c}.target-caption{display:none}.round-icon{height:38px;font-size:19px}.game-stage{height:calc(100dvh - 98px);min-height:350px;padding:2px 3vw 10px}.play-board{min-height:340px;padding:4px 28px}.pour-btn{width:145px}.ingredient-icon{font-size:42px}.ingredient-name{font-size:21px}.vessel-zone{min-height:320px}.round-name{position:absolute;bottom:0;margin:0}.vessel.beaker{width:205px;height:245px}.vessel.straight{width:166px;height:240px}.vessel.tall{width:118px;height:282px}.vessel.cocktail{width:250px;height:270px}.vessel.opaque{width:170px;height:245px}.measure-marks{right:20px;top:46px;bottom:25px;width:92px}.measure-marks span{width:50px}.measure-marks span:after{right:57px;font-size:12px}.measure-marks span.minor{width:28px}
 }
+
+/* --- 2026-09-11 polish pass: cleaner rims / tighter beaker marks / slimmer highball --- */
+/* TARGET now uses the whole lower row for the swatch after removing the caption. */
+.target-card{grid-template-columns:1fr;grid-template-rows:auto 1fr;justify-items:center}
+.target-title{grid-column:1}
+.target-display{align-self:center}
+
+/* Keep beaker graduations comfortably inside the body; no mark can enter the rim/spout area. */
+.measure-marks{top:76px;bottom:40px;right:30px;width:106px;overflow:visible}
+
+/* Glass mouths stay inside each silhouette rather than sticking past the sides. */
+.vessel.straight:before{
+  left:17px;right:17px;top:11px;height:17px;border:0;border-top:4px solid #455f62;
+  border-radius:50%;background:rgba(239,252,252,.62);box-shadow:inset 0 2px 0 rgba(255,255,255,.75)
+}
+.vessel.tall{width:132px;height:370px}
+.vessel.tall:before{
+  left:14px;right:14px;top:10px;height:15px;border:0;border-top:4px solid #435e61;
+  border-radius:50%;background:rgba(239,252,252,.6);box-shadow:inset 0 2px 0 rgba(255,255,255,.72)
+}
+.vessel.tall .vessel-inner{left:10px;right:10px}
+.vessel.tall .glass-highlight{left:25px;width:9px}
+.vessel.opaque:after{
+  left:15px;right:15px;top:10px;height:17px;border:0;border-top:4px solid #153b3f;
+  border-radius:50%;background:linear-gradient(#548083,#244f53);box-shadow:inset 0 3px 0 rgba(255,255,255,.11)
+}
+
+/* Slightly finer visible stream to match the gentler trickle audio. */
+.pour-stream{width:10px;height:108px;opacity:.94}
+
+@media (max-width:760px){
+  .measure-marks{right:28px;top:70px;bottom:38px}
+  .vessel.tall{width:120px;height:344px}
+}
+@media (max-width:950px) and (orientation:landscape){
+  .measure-marks{right:22px;top:61px;bottom:33px;width:86px}
+  .vessel.tall{width:100px;height:282px}
+}
