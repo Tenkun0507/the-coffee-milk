@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
   <meta name="theme-color" content="#f2b45c" />
   <title>THE COFFEE MILK</title>
-  <link rel="stylesheet" href="style.css?v=20260911e" />
+  <link rel="stylesheet" href="style.css?v=20260911h" />
 </head>
 <body>
   <div id="app" class="app">
@@ -33,7 +33,7 @@
 
       <section class="round-card">
         <div class="round-label">ROUND <strong id="roundText">1 / 5</strong></div>
-        <div id="roundIcons" class="round-icons"></div>
+        <div id="roundIcons" class="round-icons" aria-hidden="true"></div>
       </section>
 
       <section class="score-card">
@@ -59,6 +59,7 @@
             <div class="vessel-inner">
               <div id="liquid" class="liquid"><div class="liquid-surface"></div></div>
             </div>
+            <img id="vesselArt" class="vessel-art" src="assets/beaker.svg" alt="" />
             <div id="measureMarks" class="measure-marks"></div>
             <div class="glass-highlight"></div>
             <div class="vessel-detail"></div>
@@ -85,10 +86,22 @@
         <h1>THE COFFEE MILK</h1>
         <p>見本の色に合わせながら、溢れないギリギリまで注げ。</p>
         <div class="rule-grid">
-          <div><b>ONE USE</b><span>各ボタンは1回だけ</span></div>
-          <div><b>COLOR</b><span>色が近いほど高得点</span></div>
-          <div><b>VOLUME</b><span>満杯に近いほど高得点</span></div>
-          <div><b>OVERFLOW</b><span>溢れたラウンドは0点</span></div>
+          <div class="rule-item">
+            <span class="rule-illus rule-oneuse" aria-hidden="true"><i></i><i></i></span>
+            <b>ONE USE</b><span>各ボタンは1回だけ</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-illus rule-color" aria-hidden="true"><i></i><i></i><i></i></span>
+            <b>COLOR</b><span>色が近いほど高得点</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-illus rule-volume" aria-hidden="true"><i></i><i></i><i></i></span>
+            <b>VOLUME</b><span>満杯に近いほど高得点</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-illus rule-overflow" aria-hidden="true"><i></i><i></i><i></i></span>
+            <b>OVERFLOW</b><span>溢れたラウンドは0点</span>
+          </div>
         </div>
         <button id="startBtn" class="main-btn" type="button">START MIXING</button>
       </div>
@@ -125,6 +138,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=20260911e"></script>
+  <script src="script.js?v=20260911h"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 
   const els = {
     targetSwatch: $('#targetSwatch'), roundText: $('#roundText'), roundIcons: $('#roundIcons'),
-    totalScore: $('#totalScore'), soundBtn: $('#soundBtn'), titleBtn: $('#titleBtn'), vessel: $('#vessel'), liquid: $('#liquid'),
+    totalScore: $('#totalScore'), soundBtn: $('#soundBtn'), titleBtn: $('#titleBtn'), vessel: $('#vessel'), liquid: $('#liquid'), vesselArt: $('#vesselArt'),
     measureMarks: $('#measureMarks'), roundName: $('#roundName'), coffeeBtn: $('#coffeeBtn'), milkBtn: $('#milkBtn'),
     coffeeUse: $('#coffeeUse'), milkUse: $('#milkUse'), pourStream: $('#pourStream'), toast: $('#toast'),
     startModal: $('#startModal'), startBtn: $('#startBtn'), resultModal: $('#resultModal'), resultKicker: $('#resultKicker'),
@@ -14,12 +14,14 @@
     finalModal: $('#finalModal'), finalScore: $('#finalScore'), rankText: $('#rankText'), roundBreakdown: $('#roundBreakdown'), retryBtn: $('#retryBtn')
   };
 
+  const POUR_RATE = 0.148; // same physical amount per second for every vessel
+
   const ROUND_DATA = [
-    { key:'beaker', name:'BEAKER', rate:0.148, wobble:0.003, marks:true, blind:false },
-    { key:'straight', name:'STRAIGHT GLASS', rate:0.148, wobble:0.004, marks:false, blind:false },
-    { key:'tall', name:'SLIM GLASS', rate:0.145, wobble:0.004, marks:false, blind:false },
-    { key:'cocktail', name:'COCKTAIL GLASS', rate:0.142, wobble:0.005, marks:false, blind:false },
-    { key:'opaque', name:'BLIND GLASS', rate:0.145, wobble:0.004, marks:false, blind:true }
+    { key:'beaker', name:'BEAKER', art:'assets/beaker.svg', rate:POUR_RATE, capacity:1.00, wobble:0.003, marks:false, blind:false, streamWidth:13 },
+    { key:'straight', name:'STRAIGHT GLASS', art:'assets/straight.svg', rate:POUR_RATE, capacity:0.86, wobble:0.004, marks:false, blind:false, streamWidth:13 },
+    { key:'tall', name:'TEST TUBE GLASS', art:'assets/tall.svg', rate:POUR_RATE, capacity:0.50, wobble:0.003, marks:false, blind:false, streamWidth:13 },
+    { key:'cocktail', name:'COCKTAIL GLASS', art:'assets/cocktail.svg', rate:POUR_RATE, capacity:1.12, wobble:0.004, marks:false, blind:false, streamWidth:13 },
+    { key:'opaque', name:'BLIND GLASS', art:'assets/opaque.svg', rate:POUR_RATE, capacity:0.86, wobble:0.004, marks:false, blind:true, streamWidth:13 }
   ];
 
   const state = {
@@ -47,7 +49,8 @@
   const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
   const rand = (min,max) => Math.random()*(max-min)+min;
   const totalVolume = () => state.coffee + state.milk;
-  const fillRatio = () => totalVolume();
+  const currentCapacity = () => ROUND_DATA[state.round]?.capacity || 1;
+  const fillRatio = () => totalVolume() / currentCapacity();
 
   function actualCoffeeRatio(){
     const t = totalVolume();
@@ -86,24 +89,9 @@
 
   function setupRoundIcons(){
     els.roundIcons.innerHTML = '';
-    ROUND_DATA.forEach((r,i)=>{
-      const d = document.createElement('div');
-      d.className = 'round-icon';
-      d.dataset.index = i+1;
-      const silhouette = document.createElement('span');
-      silhouette.className = `round-vessel-icon mini-${r.key}`;
-      silhouette.setAttribute('aria-hidden','true');
-      d.appendChild(silhouette);
-      els.roundIcons.appendChild(d);
-    });
   }
 
-  function updateRoundIcons(){
-    [...els.roundIcons.children].forEach((el,i)=>{
-      el.classList.toggle('active', i === state.round);
-      el.classList.toggle('done', i < state.round);
-    });
-  }
+  function updateRoundIcons(){}
 
   function drawMarks(show){
     els.measureMarks.innerHTML = '';
@@ -142,6 +130,8 @@
     els.roundText.textContent = `${state.round+1} / ${ROUND_DATA.length}`;
     els.targetSwatch.style.background = coffeeMilkColor(state.targetCoffee);
     els.roundName.textContent = data.name;
+    els.vesselArt.src = data.art;
+    els.pourStream.style.width = `${data.streamWidth||13}px`;
     els.liquid.style.background = coffeeMilkColor(0);
     els.liquid.style.height = '0%';
     els.liquid.style.clipPath = '';
@@ -174,10 +164,10 @@
     els.liquid.style.background = color;
 
     if(data.key === 'cocktail'){
-      // Martini bowl: volume grows quickly near the top, so height is deliberately non-linear.
-      const h = clamp(Math.pow(clamp(fill,0,1),0.48)*100,0,100);
-      els.liquid.style.height = `${70 * h/100}%`;
-      const half = 48 * (h/100);
+      // In a V-shaped martini bowl, the same poured volume raises the surface quickly near the tip.
+      const h = clamp(Math.cbrt(clamp(fill,0,1))*100,0,100);
+      els.liquid.style.height = `${h}%`;
+      const half = 49 * (h/100);
       els.liquid.style.clipPath = `polygon(${50-half}% 0%, ${50+half}% 0%, 53% 100%, 47% 100%)`;
     }else{
       els.liquid.style.height = `${visiblePct}%`;
@@ -238,7 +228,7 @@
     const pulse = 1 + Math.sin(elapsed*6.2)*data.wobble;
     state[state.pouring] += data.rate * pulse * dt;
 
-    if(totalVolume() > 1){
+    if(fillRatio() > 1){
       triggerOverflow();
       return;
     }

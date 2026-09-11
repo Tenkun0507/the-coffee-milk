@@ -259,3 +259,159 @@ button{font:inherit}
   .vessel.tall{width:52px!important;height:286px}
   .vessel.tall .glass-highlight{left:13px!important;height:205px}
 }
+
+
+/* --- 2026-09-11 asset pass: image-based vessels, centered target, simpler round HUD --- */
+.target-card{
+  grid-template-columns:1fr!important;
+  grid-template-rows:auto 1fr!important;
+  justify-items:center!important;
+  align-items:center!important;
+}
+.target-title{grid-column:1!important}
+.target-display{display:grid;place-items:center;margin-inline:auto}
+.target-swatch{margin:auto}
+
+.round-card{
+  align-items:center;
+  justify-content:center;
+  padding:8px 14px;
+}
+.round-label{margin-bottom:0!important}
+.round-icons{display:none!important}
+
+.result-card #nextBtn{margin-top:22px}
+
+.rule-item{align-items:center;text-align:center;padding-top:14px!important;padding-bottom:14px!important}
+.rule-illus{position:relative;display:block;width:84px;height:54px;margin:0 auto 8px;border-radius:14px;background:linear-gradient(#fffdf6,#f8edd0);border:3px solid #c89b61;box-shadow:inset 0 3px 0 rgba(255,255,255,.85)}
+.rule-illus i{position:absolute;display:block}
+.rule-oneuse i:nth-child(1),.rule-oneuse i:nth-child(2){bottom:12px;width:18px;height:22px;border-radius:6px;border:3px solid #7a5338;background:#fff8e4}
+.rule-oneuse i:nth-child(1){left:16px;background:linear-gradient(145deg,#8b5b40,#57301f);border-color:#6a4027}
+.rule-oneuse i:nth-child(2){right:16px}
+.rule-color i:nth-child(1),.rule-color i:nth-child(2),.rule-color i:nth-child(3){bottom:12px;width:17px;height:24px;border-radius:6px;border:3px solid #8a6a54}
+.rule-color i:nth-child(1){left:12px;background:#5f3220}
+.rule-color i:nth-child(2){left:33px;background:#a6653a}
+.rule-color i:nth-child(3){left:54px;background:#f2e8c0}
+.rule-volume i:nth-child(1){left:24px;right:24px;bottom:8px;height:30px;border:3px solid #7f5d43;border-radius:8px 8px 12px 12px;background:linear-gradient(180deg,transparent 0 25%,#c68d5d 25% 100%)}
+.rule-volume i:nth-child(2){left:29px;right:29px;bottom:27px;height:4px;background:#fff7e2}
+.rule-volume i:nth-child(3){left:29px;right:29px;bottom:36px;height:4px;background:#fff7e2}
+.rule-overflow i:nth-child(1){left:24px;right:24px;bottom:12px;height:24px;border:3px solid #7f5d43;border-radius:7px 7px 10px 10px;background:linear-gradient(180deg,#b9784d 0 20%,#f5e4c1 20% 100%)}
+.rule-overflow i:nth-child(2){left:18px;top:12px;width:12px;height:12px;border-radius:50%;background:#c89b61;box-shadow:28px -6px 0 #c89b61,48px 3px 0 #c89b61}
+.rule-overflow i:nth-child(3){display:none}
+
+.vessel,
+.vessel.beaker,.vessel.straight,.vessel.tall,.vessel.cocktail,.vessel.opaque{
+  filter:drop-shadow(0 16px 12px rgba(69,47,32,.18));
+}
+.vessel::before,.vessel::after,
+.vessel .glass-highlight,
+.vessel .vessel-detail{display:none!important;content:none!important}
+.vessel-art{position:absolute;inset:0;width:100%;height:100%;z-index:10;pointer-events:none;object-fit:contain}
+.vessel-inner{background:transparent!important;border:none!important;box-shadow:none!important}
+.liquid{box-shadow:inset 0 4px 11px rgba(118,93,63,.11), inset 0 -10px 22px rgba(255,255,255,.1)}
+
+.vessel.beaker{width:300px;height:320px}
+.vessel.beaker .vessel-inner{left:73px;right:74px;top:68px;bottom:34px;border-radius:2px 2px 24px 24px}
+.measure-marks{top:97px!important;bottom:56px!important;right:64px!important;width:112px!important}
+.measure-marks span{height:5px!important;width:58px!important}
+.measure-marks span:after{right:68px!important;top:-11px!important}
+
+.vessel.straight{width:230px;height:320px}
+.vessel.straight .vessel-inner{left:44px;right:44px;top:48px;bottom:38px;border-radius:12px 12px 28px 28px}
+
+.vessel.tall{width:120px!important;height:390px}
+.vessel.tall .vessel-inner{left:42px;right:42px;top:39px;bottom:35px;border-radius:10px 10px 18px 18px}
+
+.vessel.cocktail{width:360px;height:360px}
+.vessel.cocktail .vessel-inner{left:41px;right:41px;top:55px;height:160px;bottom:auto;clip-path:polygon(0 0,100% 0,60% 100%,40% 100%)}
+.vessel.cocktail .liquid-surface{height:5px}
+
+.vessel.opaque{width:230px;height:320px}
+.vessel.opaque .vessel-inner{left:44px;right:44px;top:48px;bottom:38px;border-radius:12px 12px 28px 28px}
+
+@media(max-width:900px){
+  .round-card{min-height:88px!important}
+}
+@media(max-width:430px){
+  .vessel.beaker{width:268px;height:286px}
+  .vessel.beaker .vessel-inner{left:65px;right:66px;top:61px;bottom:31px}
+  .measure-marks{top:86px!important;bottom:50px!important;right:51px!important;width:95px!important}
+  .measure-marks span{width:48px!important}
+  .measure-marks span:after{right:56px!important;font-size:13px!important}
+  .vessel.straight{width:208px;height:286px}
+  .vessel.straight .vessel-inner{left:40px;right:40px;top:43px;bottom:34px}
+  .vessel.tall{width:102px!important;height:346px}
+  .vessel.tall .vessel-inner{left:36px;right:36px;top:34px;bottom:31px}
+  .vessel.cocktail{width:308px;height:308px}
+  .vessel.cocktail .vessel-inner{left:36px;right:36px;top:48px;height:138px}
+  .vessel.opaque{width:206px;height:286px}
+  .vessel.opaque .vessel-inner{left:40px;right:40px;top:43px;bottom:34px}
+}
+@media(max-height:680px) and (orientation:landscape){
+  .measure-marks{top:79px!important;bottom:46px!important;right:52px!important;width:88px!important}
+  .measure-marks span{width:44px!important;height:4px!important}
+  .measure-marks span:after{right:52px!important;font-size:12px!important}
+  .vessel.beaker{width:235px;height:252px}
+  .vessel.beaker .vessel-inner{left:57px;right:58px;top:54px;bottom:26px}
+  .vessel.straight{width:176px;height:244px}
+  .vessel.straight .vessel-inner{left:34px;right:34px;top:37px;bottom:28px}
+  .vessel.tall{width:84px!important;height:292px}
+  .vessel.tall .vessel-inner{left:29px;right:29px;top:29px;bottom:26px}
+  .vessel.cocktail{width:258px;height:258px}
+  .vessel.cocktail .vessel-inner{left:30px;right:30px;top:40px;height:116px}
+  .vessel.opaque{width:176px;height:244px}
+  .vessel.opaque .vessel-inner{left:34px;right:34px;top:37px;bottom:28px}
+}
+
+
+/* Adopted vessel art pass: beaker graduations are baked into the SVG asset. */
+.measure-marks{display:none}
+
+
+/* === Generated vessel artwork integration (final) === */
+.vessel{overflow:visible!important;filter:drop-shadow(0 16px 13px rgba(59,43,31,.19))!important}
+.vessel-art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;z-index:12!important;pointer-events:none!important}
+.vessel-inner{position:absolute!important;z-index:8!important;overflow:hidden!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.vessel::before,.vessel::after,.vessel .glass-highlight,.vessel .vessel-detail{display:none!important}
+.measure-marks{display:none!important}
+.liquid{left:0!important;right:0!important;bottom:0!important;width:auto!important;z-index:1!important;box-shadow:inset 0 5px 9px rgba(255,255,255,.18), inset 0 -8px 14px rgba(70,40,25,.12)!important}
+.liquid-surface{height:5px!important;background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(80,55,40,.24))!important;border-bottom:1px solid rgba(66,46,34,.35)!important}
+
+/* Generated beaker: the 100 mL mark is at the brim; artwork already contains 20 mL labels and 10 mL submarks. */
+.vessel.beaker{width:286px!important;height:324px!important}
+.vessel.beaker .vessel-inner{left:11.5%!important;right:10.5%!important;top:10.5%!important;bottom:12.5%!important;border-radius:3px 3px 25px 25px!important}
+
+/* Generated straight rocks glass. */
+.vessel.straight{width:218px!important;height:270px!important}
+.vessel.straight .vessel-inner{left:10.5%!important;right:10.5%!important;top:7.5%!important;bottom:18.5%!important;border-radius:7px 7px 24px 24px!important}
+
+/* Generated test-tube glass: intentionally extremely narrow. */
+.vessel.tall{width:58px!important;height:365px!important}
+.vessel.tall .vessel-inner{left:16%!important;right:16%!important;top:3.5%!important;bottom:7.5%!important;border-radius:8px 8px 22px 22px!important}
+
+/* Generated martini glass; only the bowl is fillable. */
+.vessel.cocktail{width:274px!important;height:370px!important}
+.vessel.cocktail .vessel-inner{left:4.5%!important;right:4.5%!important;top:4%!important;height:40.5%!important;bottom:auto!important;clip-path:polygon(0 0,100% 0,58% 100%,42% 100%)!important}
+
+/* Generated opaque tumbler. Liquid is kept for scoring but hidden by the opaque artwork. */
+.vessel.opaque{width:208px!important;height:291px!important}
+.vessel.opaque .vessel-inner{left:9%!important;right:9%!important;top:7%!important;bottom:7%!important;border-radius:9px 9px 28px 28px!important}
+
+/* Keep the stream aligned with the actual vessel mouth. */
+.vessel-zone .pour-stream{top:18px!important}
+
+@media(max-width:620px){
+  .vessel.beaker{width:246px!important;height:279px!important}
+  .vessel.straight{width:186px!important;height:230px!important}
+  .vessel.tall{width:50px!important;height:315px!important}
+  .vessel.cocktail{width:235px!important;height:317px!important}
+  .vessel.opaque{width:180px!important;height:252px!important}
+}
+
+@media(max-height:680px) and (orientation:landscape){
+  .vessel.beaker{width:205px!important;height:232px!important}
+  .vessel.straight{width:158px!important;height:196px!important}
+  .vessel.tall{width:40px!important;height:250px!important}
+  .vessel.cocktail{width:195px!important;height:263px!important}
+  .vessel.opaque{width:150px!important;height:210px!important}
+}

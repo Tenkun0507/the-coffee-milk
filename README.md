@@ -24,3 +24,7 @@ GitHub Pages でそのまま遊べるブラウザゲームです。
 
 ## GitHub Pages
 このフォルダ内のファイルをリポジトリ直下へアップロードし、GitHub の `Settings > Pages` から公開してください。
+
+
+## Files
+- `assets/` contains the vessel SVG illustrations used in-game.
