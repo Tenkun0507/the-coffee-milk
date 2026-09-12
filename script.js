@@ -48,6 +48,8 @@
   let lastPaint = 0;
   const PAINT_INTERVAL = 1000 / 36;
   const assetPromises = new Map();
+  let fitRaf = 0;
+  const ASSET_ASPECT = 1536 / 2048; // 3:4
 
 
   const I18N = {
@@ -212,6 +214,36 @@
     els.liquid.style.transform = `scaleY(${visualFillRatio()}) translateZ(0)`;
   }
 
+  function fitVesselCanvas() {
+    if (!els.gameScreen.classList.contains('active')) return;
+    const area = els.vesselArea.getBoundingClientRect();
+    if (!area.width || !area.height) return;
+
+    // Always preserve the asset's exact 3:4 coordinate system.
+    // This prevents percentage liquid masks from drifting when a window is not fullscreen.
+    const pad = 2;
+    const maxW = Math.max(1, area.width - pad * 2);
+    const maxH = Math.max(1, area.height - pad * 2);
+    let h = maxH;
+    let w = h * ASSET_ASPECT;
+    if (w > maxW) {
+      w = maxW;
+      h = w / ASSET_ASPECT;
+    }
+
+    els.vesselCanvas.style.width = `${Math.floor(w)}px`;
+    els.vesselCanvas.style.height = `${Math.floor(h)}px`;
+  }
+
+  function scheduleVesselFit() {
+    if (fitRaf) cancelAnimationFrame(fitRaf);
+    fitRaf = requestAnimationFrame(() => {
+      fitRaf = 0;
+      fitVesselCanvas();
+      updateStreamGeometry();
+    });
+  }
+
   function updateStreamGeometry() {
     if (!state) return;
     const area = els.vesselArea.getBoundingClientRect();
@@ -254,7 +286,7 @@
     await preloadAsset(r.asset);
     try { if (els.vesselArt.decode) await els.vesselArt.decode(); } catch (_) {}
     els.vesselArt.classList.remove('asset-loading');
-    requestAnimationFrame(updateStreamGeometry);
+    scheduleVesselFit();
 
     if (!initial) {
       requestAnimationFrame(() => requestAnimationFrame(() => els.vesselCanvas.classList.remove('enter')));
@@ -266,6 +298,7 @@
     ensureAudio();
     startMusic();
     showScreen(els.gameScreen);
+    scheduleVesselFit();
     void prepareRound(true);
   }
 
@@ -478,7 +511,12 @@
   // Stop a held pour if the pointer is released outside the button or the tab loses focus.
   window.addEventListener('pointerup', () => { if (activePour) stopPour(); });
   window.addEventListener('blur', () => { if (activePour) stopPour(); });
-  window.addEventListener('resize', () => requestAnimationFrame(updateStreamGeometry));
+  window.addEventListener('resize', scheduleVesselFit);
+  window.addEventListener('orientationchange', () => setTimeout(scheduleVesselFit, 80));
+  if ('ResizeObserver' in window) {
+    const vesselResizeObserver = new ResizeObserver(scheduleVesselFit);
+    vesselResizeObserver.observe(els.vesselArea);
+  }
 
   applyLanguage();
 })();

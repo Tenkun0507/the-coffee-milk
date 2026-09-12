@@ -241,3 +241,74 @@ html,body,.app{height:100%;height:100dvh;min-height:0}
   .title-controls{right:8px;top:8px}
   .lang-btn{min-width:52px}
 }
+
+
+/* ===== 2026-09-13 responsive vessel-fit + cocktail MAX pass ===== */
+/* JS supplies exact pixel width/height while preserving the 1536:2048 (3:4) asset ratio. */
+.vessel-canvas{
+  flex:0 0 auto;
+  max-width:none!important;
+  max-height:none!important;
+}
+
+/* Slightly conservative interiors so the fill never touches the vessel outline. */
+.vessel-canvas.beaker .liquid-mask{
+  left:17.15%!important;
+  right:18.05%!important;
+  top:20.35%!important;
+  bottom:16.85%!important;
+  border-radius:0 0 4% 4%!important;
+  clip-path:none!important;
+}
+.vessel-canvas.test .liquid-mask{
+  left:47.35%!important;
+  right:47.28%!important;
+  top:22.25%!important;
+  bottom:17.15%!important;
+  border-radius:0 0 999px 999px!important;
+  clip-path:none!important;
+}
+
+/* Cocktail full level is closer to the actual inner rim, while the bottom remains above the stem. */
+.vessel-canvas.cocktail .liquid-mask{
+  left:18.65%!important;
+  right:18.65%!important;
+  top:18.75%!important;
+  height:30.15%!important;
+  bottom:auto!important;
+  clip-path:polygon(0 0,100% 0,50% 100%)!important;
+}
+
+/* Visible full-level cue for the cocktail round only. */
+.cocktail-max-guide{
+  display:none;
+  position:absolute;
+  z-index:7;
+  left:27%;
+  right:27%;
+  top:18.85%;
+  height:3px;
+  background:#fffdf6;
+  border-radius:999px;
+  box-shadow:0 0 0 2px rgba(64,54,49,.72),0 1px 2px rgba(0,0,0,.12);
+  pointer-events:none;
+}
+.cocktail-max-guide span{
+  position:absolute;
+  right:-2px;
+  top:-18px;
+  font-size:10px;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.08em;
+  color:#4e413a;
+  background:rgba(255,253,246,.96);
+  border:1px solid rgba(78,65,58,.5);
+  border-radius:999px;
+  padding:2px 5px;
+}
+.vessel-canvas.cocktail .cocktail-max-guide{display:block}
+
+@media (max-width:600px){
+  .cocktail-max-guide span{font-size:8px;top:-15px;padding:2px 4px}
+}
