@@ -312,3 +312,13 @@ html,body,.app{height:100%;height:100dvh;min-height:0}
 @media (max-width:600px){
   .cocktail-max-guide span{font-size:8px;top:-15px;padding:2px 4px}
 }
+
+
+/* ===== 2026-09-13 r5: fullscreen-exit resync + hidden cocktail max ceiling ===== */
+/* Liquid-mask geometry is now set in pixels by JS on every fit. These are only safe fallbacks. */
+.vessel-canvas .liquid-mask{
+  overflow:hidden!important;
+  contain:paint;
+}
+/* No visual MAX guide. The cocktail mask itself ends exactly at the former MAX height. */
+.cocktail-max-guide{display:none!important}

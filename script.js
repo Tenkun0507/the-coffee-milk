@@ -51,6 +51,16 @@
   let fitRaf = 0;
   const ASSET_ASPECT = 1536 / 2048; // 3:4
 
+  // Normalized liquid interiors measured against the fixed 1536x2048 asset canvas.
+  // JS converts these to pixels after every resize/fullscreen change so masks cannot drift.
+  const LIQUID_BOUNDS = {
+    beaker:   { left:.1715, right:.1805, top:.2035, bottom:.1685, radius:'0 0 4% 4%' },
+    straight: { left:.2640, right:.2640, top:.4520, bottom:.2020, radius:'0 0 2% 2%' },
+    test:     { left:.4735, right:.4728, top:.2225, bottom:.1715, radius:'0 0 999px 999px' },
+    // Top is the old MAX level. Nothing can ever render above this ceiling.
+    cocktail: { left:.1865, right:.1865, top:.1885, height:.3005, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
+  };
+
 
   const I18N = {
     en: {
@@ -214,13 +224,45 @@
     els.liquid.style.transform = `scaleY(${visualFillRatio()}) translateZ(0)`;
   }
 
+  function applyLiquidMaskGeometry() {
+    if (!state) return;
+    const r = currentRound();
+    if (r.blind) {
+      els.liquidMask.style.display = 'none';
+      return;
+    }
+    const b = LIQUID_BOUNDS[r.key];
+    if (!b) return;
+    const w = els.vesselCanvas.clientWidth;
+    const h = els.vesselCanvas.clientHeight;
+    if (!w || !h) return;
+
+    const left = w * b.left;
+    const top = h * b.top;
+    const width = w * (1 - b.left - b.right);
+    const height = b.height != null ? h * b.height : h * (1 - b.top - b.bottom);
+
+    Object.assign(els.liquidMask.style, {
+      display:'block',
+      left:`${left}px`,
+      top:`${top}px`,
+      width:`${Math.max(1, width)}px`,
+      height:`${Math.max(1, height)}px`,
+      right:'auto',
+      bottom:'auto',
+      borderRadius:b.radius || '0',
+      clipPath:b.clip || 'none',
+      WebkitClipPath:b.clip || 'none'
+    });
+  }
+
   function fitVesselCanvas() {
     if (!els.gameScreen.classList.contains('active')) return;
     const area = els.vesselArea.getBoundingClientRect();
     if (!area.width || !area.height) return;
 
-    // Always preserve the asset's exact 3:4 coordinate system.
-    // This prevents percentage liquid masks from drifting when a window is not fullscreen.
+    // Rebuild the exact 3:4 asset box from the CURRENT measured area.
+    // Pixel mask geometry is then recalculated from this exact box.
     const pad = 2;
     const maxW = Math.max(1, area.width - pad * 2);
     const maxH = Math.max(1, area.height - pad * 2);
@@ -231,8 +273,9 @@
       h = w / ASSET_ASPECT;
     }
 
-    els.vesselCanvas.style.width = `${Math.floor(w)}px`;
-    els.vesselCanvas.style.height = `${Math.floor(h)}px`;
+    els.vesselCanvas.style.width = `${Math.round(w)}px`;
+    els.vesselCanvas.style.height = `${Math.round(h)}px`;
+    applyLiquidMaskGeometry();
   }
 
   function scheduleVesselFit() {
@@ -242,6 +285,16 @@
       fitVesselCanvas();
       updateStreamGeometry();
     });
+  }
+
+  function forceVesselRefit() {
+    // Browsers often report intermediate dimensions while leaving fullscreen.
+    // Refit across several layout frames so the final windowed dimensions always win.
+    scheduleVesselFit();
+    requestAnimationFrame(() => requestAnimationFrame(scheduleVesselFit));
+    setTimeout(scheduleVesselFit, 70);
+    setTimeout(scheduleVesselFit, 180);
+    setTimeout(scheduleVesselFit, 360);
   }
 
   function updateStreamGeometry() {
@@ -280,6 +333,7 @@
     els.liquid.style.transform = 'scaleY(0) translateZ(0)';
     els.liquid.style.backgroundColor = mixColor(50);
     els.liquidMask.style.visibility = r.blind ? 'hidden' : 'visible';
+    els.liquidMask.style.display = r.blind ? 'none' : 'block';
     els.resultOverlay.classList.remove('show'); els.resultOverlay.setAttribute('aria-hidden','true');
     els.nextBtn.textContent = state.round === ROUNDS.length - 1 ? tr('finalResult') : tr('nextRound');
 
@@ -511,11 +565,16 @@
   // Stop a held pour if the pointer is released outside the button or the tab loses focus.
   window.addEventListener('pointerup', () => { if (activePour) stopPour(); });
   window.addEventListener('blur', () => { if (activePour) stopPour(); });
-  window.addEventListener('resize', scheduleVesselFit);
-  window.addEventListener('orientationchange', () => setTimeout(scheduleVesselFit, 80));
+  window.addEventListener('resize', forceVesselRefit);
+  window.addEventListener('orientationchange', forceVesselRefit);
+  document.addEventListener('fullscreenchange', forceVesselRefit);
+  document.addEventListener('webkitfullscreenchange', forceVesselRefit);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', forceVesselRefit);
   if ('ResizeObserver' in window) {
-    const vesselResizeObserver = new ResizeObserver(scheduleVesselFit);
+    const vesselResizeObserver = new ResizeObserver(forceVesselRefit);
     vesselResizeObserver.observe(els.vesselArea);
+    vesselResizeObserver.observe(els.gameScreen);
+    vesselResizeObserver.observe(document.documentElement);
   }
 
   applyLanguage();
