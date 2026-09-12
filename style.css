@@ -1,417 +1,72 @@
 :root{
-  --ink:#4b2b1b;
-  --deep:#60361f;
-  --cream:#fff5dc;
-  --paper:#fffaf0;
-  --orange:#e89a37;
-  --green:#2f7655;
-  --glass-line:#49676a;
-  --shadow:0 14px 34px rgba(70,42,25,.18);
+  --ink:#3a302b;
+  --ink2:#58463b;
+  --cream:#fff8e9;
+  --paper:#fffdf6;
+  --gold:#d5a04c;
+  --teal:#76cbd2;
+  --coffee:#3f2318;
+  --milk:#f5e9c9;
+  --shadow:0 10px 0 rgba(82,58,43,.18),0 18px 34px rgba(58,43,32,.16);
 }
-
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;min-height:100%;font-family:ui-rounded,"Arial Rounded MT Bold",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);overscroll-behavior:none;background:#efd09a}
-body{touch-action:manipulation;user-select:none;-webkit-user-select:none}
-button{font:inherit}
-.hidden{display:none!important}
-
-.app{position:relative;min-height:100dvh;overflow:hidden;background:linear-gradient(180deg,#bfe8f0 0 32%,#e9dfc5 32% 100%)}
-.sun{position:absolute;width:360px;height:360px;border-radius:50%;left:-90px;top:-160px;background:radial-gradient(circle,rgba(255,245,184,.9),rgba(255,232,159,.32) 45%,transparent 68%);pointer-events:none}
-.window-view{position:absolute;left:3vw;top:115px;width:25vw;min-width:260px;height:43vh;border:14px solid #b9814b;border-radius:8px;background:linear-gradient(#8fd9ed 0 55%,#42b9d2 55%);overflow:hidden;box-shadow:inset 0 0 0 5px rgba(255,255,255,.65),var(--shadow);opacity:.94}
-.window-view:before,.window-view:after{content:"";position:absolute;background:#b9814b;z-index:3}.window-view:before{left:48%;top:0;width:12px;height:100%}.window-view:after{left:0;top:48%;height:12px;width:100%}
-.sea{position:absolute;inset:52% 0 0;background:linear-gradient(#48c3dc,#2aa7c4)}
-.island{position:absolute;left:42%;top:49%;width:46%;height:22%;border-radius:80% 30% 0 0;background:#4f9766;transform:skewX(-18deg)}
-.window-palm{position:absolute;left:2%;bottom:-11%;font-size:100px;transform:rotate(-12deg);z-index:4}
-.kitchen-shelf{position:absolute;right:4vw;height:18px;background:#9a6038;border-radius:8px;box-shadow:0 9px 18px rgba(82,50,31,.16)}
-.shelf-a{top:180px;width:31vw}.shelf-b{top:260px;width:23vw;right:8vw}
-.kitchen-shelf i{display:inline-block;width:38px;height:50px;margin:-49px 13px 0;background:linear-gradient(#fff4d8,#d7c29e);border:2px solid #947454;border-radius:8px 8px 3px 3px}.shelf-b i{height:38px;margin-top:-37px;background:#acc49c}
-.leaf-deco{position:absolute;font-size:130px;opacity:.65;pointer-events:none;filter:drop-shadow(0 10px 8px rgba(45,86,51,.14))}.leaf-left{left:-45px;bottom:-25px;transform:rotate(28deg)}.leaf-right{right:-32px;top:28%;transform:rotate(-110deg)}
-
-.topbar{position:relative;z-index:10;display:grid;grid-template-columns:1.35fr .92fr 1.08fr .72fr;gap:12px;padding:14px 18px 8px;align-items:stretch}
-.brand{min-height:136px;background:linear-gradient(150deg,#8f542d,#6f3c23);border:5px solid #5d311d;border-radius:24px;box-shadow:0 7px 0 #4c2718,var(--shadow);color:#fff3d5;display:flex;flex-direction:column;justify-content:center;align-items:center;transform:rotate(-.5deg);text-shadow:0 3px 0 #502818}
-.brand-the{font-size:18px;font-weight:1000;letter-spacing:.18em}.brand-main{font-size:clamp(31px,4vw,61px);font-weight:1000;line-height:.86;white-space:nowrap}.brand-sub{margin-top:9px;padding:5px 12px;background:#edb45d;border-radius:999px;color:#5a311e;text-shadow:none;font-size:11px;font-weight:1000;letter-spacing:.11em}
-.target-card,.round-card,.score-card{min-height:136px;background:rgba(255,249,232,.97);border:4px solid #94603b;border-radius:22px;box-shadow:var(--shadow)}
-
-/* Target is intentionally the strongest visual element in the HUD. */
-.target-card{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 1fr;align-items:center;gap:4px 10px;padding:11px 13px;border-width:5px;border-color:#61371f;background:linear-gradient(145deg,#fffef6,#ffe6ad);box-shadow:0 8px 0 #714229,0 14px 34px rgba(70,42,25,.2)}
-.target-title{grid-column:1/3;justify-self:center;font-size:clamp(19px,1.6vw,25px);font-weight:1000;letter-spacing:.1em;background:#5b321f;color:#fff8e8;border-radius:999px;padding:5px 18px;box-shadow:0 3px 0 #351d12}
-.target-display{width:clamp(96px,9vw,132px);aspect-ratio:1;border-radius:24px;padding:8px;background:#fff;border:5px solid #3f291f;box-shadow:0 0 0 5px #f1c66c,0 7px 0 rgba(71,42,26,.25),inset 0 0 0 2px #fff}
-.target-swatch{width:100%;height:100%;border-radius:13px;border:3px solid rgba(255,255,255,.9);box-shadow:inset 0 0 0 2px rgba(57,36,24,.22)}
-.target-caption{font-size:clamp(12px,1vw,15px);font-weight:1000;line-height:1.15;color:#603922;max-width:78px}
-.target-caption:after{content:"↙";display:block;font-size:28px;line-height:1;margin-top:2px;color:#b4692e}
-
-.round-card{display:flex;flex-direction:column;justify-content:center;padding:9px 12px}.round-label{text-align:center;font-size:clamp(16px,1.7vw,24px);font-weight:1000;margin-bottom:8px}.round-icons{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.round-icon{height:50px;border:2px solid #c6a477;border-radius:12px;background:#ead9ba;display:grid;place-items:center;font-size:25px;opacity:.55;filter:grayscale(.85);position:relative}.round-icon.active{opacity:1;filter:none;background:#fff0bb;border-color:#e89c31;transform:translateY(-2px);box-shadow:0 4px 0 #d28b28}.round-icon.done{opacity:.82;filter:none;background:#daebd4}.round-icon:after{content:attr(data-index);position:absolute;right:3px;bottom:2px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;background:#6b3b23;color:#fff;font-size:9px;font-weight:1000}
-.score-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}.score-card>span{font-size:12px;font-weight:1000;letter-spacing:.08em}.score-card>strong{font-size:clamp(34px,4vw,58px);line-height:1;color:var(--green)}.sound-btn{position:absolute;right:8px;bottom:8px;width:38px;height:38px;border:3px solid #734426;border-radius:50%;background:#fff0c6;box-shadow:0 4px 0 #734426;cursor:pointer;font-size:17px}
-
-.game-stage{position:relative;z-index:3;height:calc(100dvh - 158px);min-height:520px;padding:10px 5vw 22px}.counter-back{position:absolute;left:0;right:0;bottom:0;height:54%;background:linear-gradient(180deg,#d7b98c 0 8%,#f1dbba 8% 100%);border-top:12px solid #b77c47;box-shadow:0 -9px 25px rgba(74,48,31,.14)}
-.play-board{position:relative;width:min(1050px,96vw);height:100%;min-height:470px;margin:auto;display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:24px;align-items:center;padding:18px 28px;background:rgba(255,250,234,.28);border-radius:36px;backdrop-filter:blur(2px)}
-.pour-side{display:flex;justify-content:center;align-items:center}.pour-btn{width:min(220px,100%);aspect-ratio:1/.9;border:5px solid #61361f;border-radius:28px;box-shadow:0 11px 0 #61361f,0 20px 32px rgba(65,40,24,.17);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .055s ease,filter .16s,opacity .16s;position:relative;overflow:hidden;touch-action:none}.pour-btn:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,rgba(255,255,255,.34),transparent 42%);pointer-events:none}.coffee-btn{background:linear-gradient(145deg,#8b5b40,#57301f);color:#fff7e7}.milk-btn{background:linear-gradient(145deg,#fffefa,#e7dcc5);color:#5d3622}.pour-btn:active,.pour-btn.pouring{transform:translateY(7px);box-shadow:0 4px 0 #61361f,0 10px 20px rgba(65,40,24,.17)}.pour-btn.used{filter:grayscale(.9);opacity:.48;cursor:not-allowed}.pour-btn:disabled:not(.used){opacity:.72;cursor:default}.ingredient-icon{font-size:clamp(50px,7vw,80px);line-height:1}.ingredient-name{font-size:clamp(23px,3vw,36px);font-weight:1000}.use-badge{padding:5px 14px;border-radius:999px;background:#f3c771;border:2px solid rgba(91,51,30,.25);font-weight:1000;font-size:13px}.pour-btn.used .use-badge{background:#cfcfcf;color:#575757}
-
-.vessel-zone{height:100%;min-height:410px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;perspective:900px}.round-name{margin-top:10px;padding:6px 16px;border-radius:999px;background:rgba(91,52,31,.88);color:#fff4dc;font-weight:1000;font-size:12px;letter-spacing:.14em;box-shadow:0 4px 0 rgba(73,40,24,.22)}
-.vessel{position:relative;isolation:isolate;filter:drop-shadow(0 18px 12px rgba(69,47,32,.22));will-change:transform,opacity}.vessel-inner{position:absolute;overflow:hidden;z-index:2}.liquid{position:absolute;left:0;right:0;bottom:0;height:0;background:#faefcf;box-shadow:inset 0 4px 11px rgba(118,93,63,.11);will-change:height,background}.liquid-surface{position:absolute;left:0;right:0;top:0;height:7px;background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(83,67,56,.35));border-bottom:2px solid rgba(68,54,45,.42);box-shadow:0 2px 5px rgba(57,42,32,.25);z-index:3}.glass-highlight{position:absolute;z-index:7;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.8),rgba(255,255,255,.08));border-radius:999px}.vessel-detail{position:absolute;z-index:8;pointer-events:none}.opaque-cover{display:none}
-
-/* Round 1 — clean laboratory beaker */
-.vessel.beaker{width:270px;height:324px}.vessel.beaker .vessel-inner{left:19px;right:20px;top:31px;bottom:13px;border:5px solid var(--glass-line);border-top:0;border-radius:2px 2px 28px 28px;background:linear-gradient(90deg,rgba(198,230,233,.48),rgba(255,255,255,.18) 46%,rgba(183,217,220,.48));box-shadow:inset 0 -10px 18px rgba(70,102,105,.13)}.vessel.beaker:before{content:"";position:absolute;z-index:6;left:7px;right:9px;top:10px;height:39px;border:6px solid var(--glass-line);border-radius:50%;background:rgba(232,250,250,.74);box-shadow:inset 0 5px 0 rgba(255,255,255,.8)}.vessel.beaker:after{content:"";position:absolute;z-index:6;right:-1px;top:16px;width:61px;height:29px;background:linear-gradient(160deg,#effcfc,#bedadc);clip-path:polygon(0 5%,100% 28%,20% 100%);filter:drop-shadow(1px 2px 0 var(--glass-line))}.vessel.beaker .glass-highlight{left:39px;top:58px;width:17px;height:220px}
-.measure-marks{position:absolute;z-index:12;right:27px;top:56px;bottom:29px;width:112px;pointer-events:none}.measure-marks span{position:absolute;right:0;width:64px;height:5px;border-radius:4px;background:#432e23;box-shadow:0 0 0 2px #fff9e8,0 2px 3px rgba(0,0,0,.18)}.measure-marks span:after{content:attr(data-label);position:absolute;right:72px;top:-12px;min-width:32px;text-align:right;color:#35241c;font-size:16px;font-weight:1000;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff}.measure-marks span.minor{width:35px;height:4px;background:#695043}.measure-marks span.minor:after{display:none}
-
-/* Round 2 — premium heavy-base tumbler */
-.vessel.straight{width:218px;height:314px}.vessel.straight .vessel-inner{inset:15px 13px 13px;border:5px solid #4e696b;border-top-width:7px;border-radius:18px 18px 38px 38px;background:linear-gradient(90deg,rgba(205,235,237,.55),rgba(255,255,255,.18) 48%,rgba(185,221,224,.5));box-shadow:inset 0 -17px 0 rgba(70,98,99,.24),inset 0 -24px 0 rgba(255,255,255,.38)}.vessel.straight:before{content:"";position:absolute;z-index:7;left:7px;right:7px;top:3px;height:30px;border:5px solid #455f62;border-radius:50%;background:linear-gradient(#f5ffff,#c9e2e3);box-shadow:inset 0 4px 0 #fff}.vessel.straight:after{content:"";position:absolute;z-index:5;left:22px;right:22px;bottom:5px;height:21px;border-radius:50%;background:rgba(65,88,89,.38)}.vessel.straight .glass-highlight{left:34px;top:48px;width:14px;height:208px}
-
-/* Round 3 — slim highball, subtly tapered */
-.vessel.tall{width:158px;height:370px}.vessel.tall .vessel-inner{left:11px;right:11px;top:12px;bottom:10px;border:5px solid #4b686a;border-top-width:7px;border-radius:15px 15px 28px 28px;background:linear-gradient(90deg,rgba(202,233,236,.57),rgba(255,255,255,.15) 52%,rgba(182,218,221,.52));box-shadow:inset 0 -13px 0 rgba(66,93,94,.22)}.vessel.tall:before{content:"";position:absolute;z-index:7;left:5px;right:5px;top:1px;height:27px;border:5px solid #435e61;border-radius:50%;background:linear-gradient(#f4ffff,#c9e4e5)}.vessel.tall:after{content:"";position:absolute;z-index:5;left:20px;right:20px;bottom:2px;height:17px;border-radius:50%;background:rgba(65,88,89,.34)}.vessel.tall .glass-highlight{left:29px;top:43px;width:10px;height:270px}
-
-/* Round 4 — martini glass with a real bowl/stem/base silhouette */
-.vessel.cocktail{width:320px;height:342px}.vessel.cocktail:before{content:"";position:absolute;z-index:1;left:11px;right:11px;top:6px;height:224px;background:#4b6668;clip-path:polygon(0 0,100% 0,60% 100%,40% 100%);filter:drop-shadow(0 4px 3px rgba(0,0,0,.12))}.vessel.cocktail:after{content:"";position:absolute;z-index:3;left:18px;right:18px;top:11px;height:213px;background:linear-gradient(90deg,rgba(199,231,234,.62),rgba(255,255,255,.18) 48%,rgba(180,216,220,.58));clip-path:polygon(0 0,100% 0,59% 100%,41% 100%)}.vessel.cocktail .vessel-inner{z-index:4;left:18px;right:18px;top:11px;height:213px;clip-path:polygon(0 0,100% 0,59% 100%,41% 100%);background:transparent}.vessel.cocktail .vessel-inner:after{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:rgba(255,255,255,.8);border-bottom:3px solid rgba(61,82,84,.5)}.vessel.cocktail .vessel-detail{left:50%;top:218px;width:8px;height:78px;transform:translateX(-50%);border-radius:5px;background:linear-gradient(90deg,#557073,#d9eded 47%,#557073);box-shadow:0 75px 0 0 #557073}.vessel.cocktail .vessel-detail:after{content:"";position:absolute;left:50%;top:74px;width:122px;height:14px;transform:translateX(-50%);border:5px solid #557073;border-radius:50%;background:rgba(220,240,241,.55)}.vessel.cocktail .glass-highlight{left:67px;top:39px;width:12px;height:104px;transform:rotate(18deg)}.vessel.cocktail .liquid{bottom:0}.vessel.cocktail .liquid-surface{height:6px}
-
-/* Round 5 — opaque straight tumbler: elegant, but no visual liquid cue. */
-.vessel.opaque{width:222px;height:318px}.vessel.opaque .vessel-inner{inset:15px 14px 13px;border-radius:17px 17px 34px 34px;background:transparent}.vessel.opaque:before{content:"";position:absolute;z-index:10;inset:7px 8px 5px;border:5px solid #173f43;border-radius:17px 17px 38px 38px;background:linear-gradient(145deg,#315f61,#1e4a4f 57%,#15383d);box-shadow:inset 15px 0 22px rgba(255,255,255,.1),inset -11px 0 18px rgba(0,0,0,.18),0 8px 0 rgba(23,55,58,.18)}.vessel.opaque:after{content:"";position:absolute;z-index:12;left:7px;right:7px;top:0;height:30px;border:5px solid #153b3f;border-radius:50%;background:linear-gradient(#548083,#244f53);box-shadow:inset 0 5px 0 rgba(255,255,255,.12)}.vessel.opaque .vessel-detail{z-index:13;left:50%;top:128px;width:74px;height:56px;transform:translateX(-50%);border:2px solid rgba(229,201,126,.74);border-radius:50% 18% 50% 18%;opacity:.8}.vessel.opaque .vessel-detail:before,.vessel.opaque .vessel-detail:after{content:"";position:absolute;width:36px;height:26px;border:2px solid rgba(229,201,126,.74);border-radius:50% 18% 50% 18%}.vessel.opaque .vessel-detail:before{left:-23px;top:25px;transform:rotate(-30deg)}.vessel.opaque .vessel-detail:after{right:-21px;top:-15px;transform:rotate(35deg)}.vessel.opaque .glass-highlight{z-index:14;left:34px;top:45px;width:12px;height:205px;background:linear-gradient(90deg,rgba(255,255,255,.23),transparent)}
-
-/* Fluid stream */
-.pour-stream{position:absolute;top:3px;left:50%;transform:translateX(-50%);width:14px;height:112px;border-radius:9px;z-index:30;box-shadow:0 0 6px rgba(255,255,255,.34);animation:stream .14s infinite alternate ease-in-out}.pour-stream.coffee{background:linear-gradient(90deg,#7c513c,#4c291d,#8a5f47)}.pour-stream.milk{background:linear-gradient(90deg,#d3cab4,#fff9e7,#cabfaa);border:1px solid rgba(92,73,53,.45);box-shadow:0 0 0 1px rgba(255,255,255,.75),0 0 9px rgba(255,255,255,.75)}
-@keyframes stream{from{transform:translateX(-51%) skewX(-1.2deg)}to{transform:translateX(-49%) skewX(1.2deg)}}
-
-/* Round transition: old glass leaves left, new glass enters from right. */
-.vessel.slide-enter{animation:vesselIn .6s cubic-bezier(.16,.88,.3,1.08) both}.vessel.slide-exit{animation:vesselOut .4s cubic-bezier(.55,.02,.86,.47) both}
-@keyframes vesselIn{0%{transform:translateX(58vw) rotate(7deg);opacity:0}72%{transform:translateX(-14px) rotate(-1.2deg);opacity:1}100%{transform:translateX(0) rotate(0);opacity:1}}
-@keyframes vesselOut{0%{transform:translateX(0) rotate(0);opacity:1}100%{transform:translateX(-58vw) rotate(-8deg);opacity:0}}
-
-.toast{position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%);white-space:pre-line;background:#59311f;color:#fff4dc;border:5px solid #f8d698;border-radius:22px;padding:18px 28px;text-align:center;font-size:clamp(28px,6vw,70px);font-weight:1000;box-shadow:0 22px 65px rgba(37,24,18,.32)}
-.modal{position:fixed;z-index:50;inset:0;display:none;place-items:center;padding:18px;background:rgba(31,44,39,.43);backdrop-filter:blur(8px)}.modal.open{display:grid}.modal-card{width:min(570px,95vw);max-height:92vh;overflow:auto;background:linear-gradient(#fffbee,#f1d9ae);border:6px solid #744329;border-radius:30px;padding:26px;text-align:center;box-shadow:0 26px 80px rgba(43,28,19,.36)}.mini-badge{display:inline-block;background:#327454;color:white;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:1000;letter-spacing:.09em}.modal-card h1,.modal-card h2{margin:12px 0 8px;font-size:clamp(31px,6vw,57px);line-height:.95}.start-card p{font-weight:850;color:#694a38}.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.rule-grid>div{background:#fff6dc;border:3px solid #c89b61;border-radius:17px;padding:11px;display:flex;flex-direction:column;gap:4px}.rule-grid b{font-size:25px}.rule-grid span{font-size:13px;font-weight:900}.small-note{font-size:12px!important;opacity:.84}.main-btn{min-width:210px;border:0;border-radius:18px;background:linear-gradient(#f2bc51,#df8d27);color:#4d2b19;font-size:19px;font-weight:1000;padding:15px 28px;box-shadow:0 7px 0 #99591f;cursor:pointer}.main-btn:active{transform:translateY(4px);box-shadow:0 3px 0 #99591f}.result-main-score{font-size:clamp(54px,10vw,90px);font-weight:1000;line-height:1;color:#2f7655}.result-main-score small{font-size:18px}.result-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:18px 0}.metric{background:#fff6dc;border:3px solid #c99d67;border-radius:18px;padding:12px;display:flex;flex-direction:column}.metric span{font-size:12px;font-weight:1000}.metric strong{font-size:36px}.metric small{font-weight:900}.metric.multiply{border:0;background:transparent;font-size:40px}.result-detail{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.result-detail div{background:#ead0a1;border-radius:13px;padding:9px;display:flex;flex-direction:column}.result-detail span{font-size:11px;font-weight:850}.result-detail b{font-size:14px}.final-score{font-size:clamp(66px,15vw,114px);font-weight:1000;line-height:1;color:#2f7655;margin:14px 0}.rank-text{display:inline-block;background:#714226;color:white;border-radius:999px;padding:8px 18px;font-size:22px;font-weight:1000}.round-breakdown{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:18px 0}.round-breakdown div{background:#fff2cf;border:2px solid #c69860;border-radius:12px;padding:8px 3px;font-size:12px}.round-breakdown strong{display:block;font-size:16px}
-
-@media(max-width:900px){
-  .window-view{display:none}.kitchen-shelf{opacity:.35}.topbar{grid-template-columns:1.15fr .85fr 1fr;gap:6px;padding:8px}.brand{grid-column:1/3;min-height:92px}.score-card{grid-column:3;grid-row:1;min-height:92px}.target-card{grid-column:1;min-height:118px;padding:8px}.round-card{grid-column:2/4;min-height:118px}.brand-main{font-size:clamp(25px,7vw,42px)}.brand-sub{font-size:8px}.target-title{font-size:15px;padding:4px 10px}.target-display{width:86px}.target-caption{font-size:10px;max-width:54px}.round-icon{height:43px;font-size:22px}.game-stage{height:auto;min-height:calc(100dvh - 220px);padding:6px 8px 18px}.play-board{min-height:625px;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;gap:12px;padding:14px}.vessel-zone{grid-column:1/3;grid-row:1;min-height:420px}.pour-side{grid-row:2}.pour-btn{width:min(180px,43vw)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#89d0d3;font-family:"Trebuchet MS","Avenir Next",Avenir,system-ui,sans-serif;color:var(--ink);touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+button, .pour-btn{touch-action:none}
+.app{position:relative;width:100%;height:100%;min-height:520px;overflow:hidden;isolation:isolate}
+.kitchen-bg{position:absolute;inset:0;z-index:-10;background:linear-gradient(#b8e7e6 0 49%,#f3e1be 49% 74%,#d5a16c 74% 100%)}
+.tiles{position:absolute;inset:0 0 26%;opacity:.34;background-image:linear-gradient(rgba(255,255,255,.82) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.82) 2px,transparent 2px);background-size:92px 92px}
+.window{position:absolute;left:4%;top:18%;width:29%;height:42%;border:12px solid #f9f1dd;border-radius:9px;background:#8ad8ed;overflow:hidden;box-shadow:0 5px 20px rgba(60,50,40,.13)}
+.sky{position:absolute;inset:0;background:linear-gradient(#77cbe4 0 58%,#e9f6e8 58%)}
+.sea{position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(#5db6ca,#4fa6bb)}
+.palm{position:absolute;bottom:-3%;width:8px;height:72%;background:#8a6342;border-radius:99px;transform-origin:bottom}
+.palm:before{content:"";position:absolute;left:50%;top:0;width:82px;height:66px;transform:translate(-50%,-15%);background:conic-gradient(from 12deg,#447d57 0 12%,transparent 12% 21%,#447d57 21% 33%,transparent 33% 43%,#447d57 43% 55%,transparent 55% 65%,#447d57 65% 77%,transparent 77% 86%,#447d57 86% 98%,transparent 98%);border-radius:50%}
+.palm-a{left:23%;transform:rotate(-8deg)}.palm-b{left:73%;height:54%;transform:rotate(7deg) scale(.8)}
+.shelf{position:absolute;height:10px;background:#9b6845;border-radius:8px;box-shadow:0 8px 12px rgba(64,40,24,.14)}
+.shelf-a{right:5%;top:27%;width:20%}.shelf-b{right:8%;top:39%;width:13%}
+.shelf i{position:absolute;bottom:10px;width:38px;height:44px;border-radius:10px 10px 5px 5px;background:#f5ecd4;border:3px solid #b88661}
+.shelf i:nth-child(1){left:8%}.shelf i:nth-child(2){left:38%;height:55px}.shelf i:nth-child(3){left:68%}.shelf-b i:nth-child(2){left:57%}
+.counter{position:absolute;left:0;right:0;bottom:0;height:27%;background:linear-gradient(#dba978 0 8%,#c78e5b 8% 100%);box-shadow:inset 0 8px 0 rgba(255,255,255,.24)}
+.screen{position:absolute;inset:0;display:none}.screen.active{display:flex}
+.title-screen,.final-screen{align-items:center;justify-content:center;padding:28px}
+.title-panel,.final-card{width:min(860px,94vw);background:rgba(255,253,246,.94);border:5px solid var(--ink2);border-radius:32px;box-shadow:var(--shadow);padding:34px 42px;text-align:center;backdrop-filter:blur(4px)}
+.brand-kicker{font-size:13px;font-weight:900;letter-spacing:.18em;color:#9b7044}
+h1{font-size:clamp(56px,7vw,92px);line-height:.78;margin:13px 0 16px;font-weight:1000;letter-spacing:-.055em}h1 span{font-size:.62em;letter-spacing:.02em}
+.title-copy{margin:0 auto 24px;font-weight:800;color:#705d4f}
+.rule-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 28px}
+.rule-card{min-height:152px;border:3px solid #d5b37b;border-radius:18px;padding:13px 10px 12px;background:#fffaf0;display:flex;flex-direction:column;align-items:center;gap:5px}.rule-card b{font-size:16px;letter-spacing:.04em}.rule-card span:not(.rule-art){font-size:12px;line-height:1.25;color:#756456;font-weight:700}
+.rule-art{position:relative;width:72px;height:55px;display:block;margin:0 auto 3px}.rule-art i{position:absolute;display:block}
+.one-use i{width:25px;height:33px;bottom:7px;border:4px solid var(--ink2);border-radius:8px}.one-use i:first-child{left:6px;background:var(--coffee)}.one-use i:last-child{right:6px;background:var(--milk)}
+.color-art i{width:18px;height:38px;bottom:5px;border:3px solid var(--ink2);border-radius:6px}.color-art i:nth-child(1){left:6px;background:#4a2a1d}.color-art i:nth-child(2){left:27px;background:#aa754e}.color-art i:nth-child(3){left:48px;background:#f4e5bd}
+.volume-art i{left:16px;right:16px;bottom:4px;height:45px;border:4px solid var(--ink2);border-radius:5px 5px 10px 10px;background:linear-gradient(to top,#bd8257 0 86%,transparent 86%)}
+.overflow-art i:first-child{left:18px;right:18px;bottom:4px;height:39px;border:4px solid var(--ink2);border-radius:5px 5px 10px 10px;background:linear-gradient(to top,#c07e50 0 96%,transparent 96%)}.overflow-art i:nth-child(2),.overflow-art i:nth-child(3){width:9px;height:9px;border-radius:50%;background:#c07e50;top:1px}.overflow-art i:nth-child(2){left:17px}.overflow-art i:nth-child(3){right:16px}
+.primary-btn{min-width:230px;border:4px solid var(--ink2);border-radius:17px;background:#f2bd58;padding:15px 28px;font-size:22px;font-weight:1000;letter-spacing:.06em;box-shadow:0 7px 0 #8d6640;cursor:pointer;transition:transform .08s,box-shadow .08s}.primary-btn:active{transform:translateY(5px);box-shadow:0 2px 0 #8d6640}
+.game-screen{flex-direction:column;padding:88px 18px 14px}
+.corner-controls{position:absolute;right:18px;top:15px;display:flex;gap:9px;z-index:40}.small-btn{border:3px solid var(--ink2);background:rgba(255,253,246,.95);border-radius:12px;padding:9px 13px;font-size:12px;font-weight:1000;letter-spacing:.06em;box-shadow:0 4px 0 rgba(88,70,59,.28);cursor:pointer}.small-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(88,70,59,.28)}
+.hud{height:154px;display:grid;grid-template-columns:minmax(230px,1fr) minmax(300px,1.7fr) minmax(220px,.85fr);gap:14px;max-width:1350px;width:100%;margin:0 auto;z-index:20}
+.hud-card{background:rgba(255,253,246,.93);border:5px solid #635047;border-radius:25px;box-shadow:0 7px 0 rgba(93,72,58,.13)}
+.target-card{position:relative;display:grid;grid-template-rows:auto 1fr;place-items:center;padding:8px 16px 13px}.hud-title{background:#59443b;color:#fff7ea;border-radius:999px;padding:6px 22px;font-size:20px;font-weight:1000;letter-spacing:.08em;margin-top:0}.target-frame{width:92px;height:92px;border-radius:20px;padding:8px;border:5px solid #614b40;background:#f3ce83;box-shadow:inset 0 0 0 4px #fff}.target-swatch{width:100%;height:100%;border:3px solid #322824;border-radius:11px;background:#9d7653}
+.round-card{display:flex;align-items:center;justify-content:center}.round-label{font-size:28px;font-weight:1000;letter-spacing:.06em}.score-card{display:flex;flex-direction:column;align-items:center;justify-content:center}.score-label{font-size:12px;font-weight:1000;letter-spacing:.12em}.total-score{font-size:54px;line-height:1;font-weight:1000;color:#355c55;font-variant-numeric:tabular-nums}
+.playfield{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:minmax(170px,1fr) minmax(360px,2.2fr) minmax(170px,1fr);align-items:end;gap:14px;max-width:1350px;width:100%;margin:0 auto;z-index:10;padding:6px 12px 10px}
+.pour-btn{justify-self:center;align-self:end;width:min(210px,100%);height:210px;border-radius:28px;border:5px solid #5b473d;box-shadow:0 9px 0 rgba(76,54,41,.34);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .07s,filter .16s,opacity .16s;overflow:hidden}.pour-btn:active:not(.used){transform:translateY(6px);box-shadow:0 3px 0 rgba(76,54,41,.34)}.coffee-btn{background:#40251c;color:#fff8e9}.milk-btn{background:#fffdf4;color:#40342e}.pour-btn strong{font-size:31px;letter-spacing:.02em}.pour-btn small{background:#e2b65a;color:#4f3b2c;border:2px solid #7f5b39;border-radius:999px;padding:4px 15px;font-weight:1000;font-size:11px}.pour-btn.used{opacity:.38;filter:grayscale(.55);cursor:default}.pour-btn.pouring{filter:brightness(1.12);transform:translateY(5px)}
+.pour-icon{width:44px;height:48px;position:relative;display:block;border:4px solid currentColor;border-radius:6px 6px 13px 13px}.coffee-icon{background:#6b3c28}.milk-icon{background:#f0e2bc}.pour-icon:before{content:"";position:absolute;left:7px;right:7px;top:-12px;height:13px;border:4px solid currentColor;border-bottom:0;border-radius:7px 7px 0 0}.pour-icon i{position:absolute;inset:7px;border-radius:4px;border-left:3px solid rgba(255,255,255,.4)}
+.vessel-area{position:relative;align-self:stretch;display:flex;align-items:flex-end;justify-content:center;min-width:0;overflow:visible}.vessel-canvas{position:relative;width:min(500px,45vw);aspect-ratio:3/4;max-height:100%;flex:0 1 auto;transform:translateX(0);transition:transform .45s cubic-bezier(.2,.85,.25,1.18),opacity .28s}.vessel-canvas.enter{transform:translateX(110vw);opacity:0}.vessel-canvas.exit{transform:translateX(-110vw);opacity:0}.vessel-art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:5;pointer-events:none}.liquid-mask{position:absolute;z-index:2;overflow:hidden;pointer-events:none}.liquid{position:absolute;left:0;right:0;bottom:0;height:0%;background:#9f704d;transition:background-color .08s}.liquid-surface{position:absolute;left:0;right:0;top:0;height:4px;background:rgba(255,255,255,.82);box-shadow:0 2px 2px rgba(70,40,20,.18)}
+/* Liquid masks line up with the fixed 1536x2048 asset canvases. */
+.vessel-canvas.beaker .liquid-mask{left:10.8%;right:11.2%;top:16.1%;bottom:12.4%;border-radius:0 0 4% 4%}
+.vessel-canvas.straight .liquid-mask{left:24.6%;right:23.9%;top:43.9%;bottom:12.7%;border-radius:0 0 3% 3%}
+.vessel-canvas.test .liquid-mask{left:44.8%;right:44.1%;top:17.5%;bottom:12.5%;border-radius:0 0 50% 50%}
+.vessel-canvas.cocktail .liquid-mask{left:12.8%;right:12.1%;top:16.4%;height:36.8%;clip-path:polygon(0 0,100% 0,51.7% 100%,48.3% 100%)}
+.vessel-canvas.opaque .liquid-mask{display:none}
+.pour-stream{position:absolute;top:0;left:50%;width:12px;height:0;transform:translateX(-50%);z-index:1;border-radius:999px;background:#7b4a31;opacity:0;box-shadow:inset 2px 0 rgba(255,255,255,.22);transition:opacity .05s}.pour-stream.active{opacity:1;height:29%}.pour-stream.milk{background:#f0e1bd}.pour-stream.coffee{background:#5a321f}
+.overlay{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(45,35,29,.32);backdrop-filter:blur(4px)}.overlay.show{display:flex}.result-card{width:min(510px,88vw);background:#fffaf0;border:5px solid #57453c;border-radius:29px;padding:26px 34px 30px;text-align:center;box-shadow:var(--shadow)}.result-eyebrow{font-size:13px;font-weight:1000;letter-spacing:.15em;color:#987044}.result-card h2{font-size:38px;margin:4px 0 14px}.result-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 16px}.result-metrics div{border:3px solid #d2b17d;border-radius:17px;padding:12px;background:#fff}.result-metrics span{display:block;font-size:11px;font-weight:1000;letter-spacing:.12em}.result-metrics b{font-size:35px}.round-score-label{font-size:11px;font-weight:1000;letter-spacing:.14em}.round-score{font-size:66px;font-weight:1000;line-height:1;color:#3c625b}.result-note{min-height:22px;font-size:13px;font-weight:800;color:#795f4e;margin:8px 0 0}.result-next{margin-top:28px}
+.final-screen{padding-top:70px}.final-card{max-width:760px}.final-card h2{font-size:46px;margin:7px 0 22px}.final-score-label{font-size:13px;font-weight:1000;letter-spacing:.16em}.final-score{font-size:clamp(72px,10vw,112px);font-weight:1000;color:#355c55;line-height:1;margin:3px 0 20px}.round-breakdown{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 27px}.round-breakdown div{background:#fff;border:3px solid #d4b078;border-radius:14px;padding:8px 4px}.round-breakdown span{display:block;font-size:10px;font-weight:900;color:#846c5b}.round-breakdown b{font-size:19px}
+@media (max-width:800px){
+  .title-panel{padding:24px 18px}.rule-grid{grid-template-columns:1fr 1fr}.rule-card{min-height:125px}
+  .game-screen{padding:69px 8px 8px}.corner-controls{right:8px;top:8px}.hud{height:117px;grid-template-columns:1fr 1.2fr .85fr;gap:6px}.hud-card{border-width:3px;border-radius:17px}.hud-title{font-size:13px;padding:4px 14px}.target-frame{width:69px;height:69px;border-width:3px;padding:6px}.round-label{font-size:18px}.score-label{font-size:8px}.total-score{font-size:34px}.playfield{grid-template-columns:1fr 1.55fr 1fr;padding:3px 2px 6px;gap:2px}.pour-btn{width:122px;height:148px;border-width:3px;border-radius:19px;gap:6px}.pour-btn strong{font-size:18px}.pour-btn small{font-size:8px;padding:3px 9px}.pour-icon{transform:scale(.72);margin:-5px}.vessel-canvas{width:min(420px,54vw)}
 }
-
-@media(max-width:430px){
-  .target-display{width:74px}.target-caption{display:none}.target-card{grid-template-columns:1fr;grid-template-rows:auto auto}.target-title{grid-column:1}.brand-main{font-size:28px}.vessel.cocktail{width:292px}.vessel.beaker{width:245px;height:300px}.vessel.straight{width:202px;height:292px}.vessel.tall{width:146px;height:344px}.vessel.opaque{width:205px;height:298px}.vessel-zone{min-height:390px}.measure-marks{right:25px;top:54px;bottom:29px}.measure-marks span:after{font-size:14px}
+@media (max-width:540px){
+  .game-screen{padding-top:64px}.hud{height:104px}.playfield{grid-template-columns:105px 1fr 105px}.pour-btn{width:98px;height:128px}.pour-btn strong{font-size:15px}.pour-icon{transform:scale(.62);margin:-8px}.vessel-canvas{width:min(360px,63vw)}.round-label{font-size:15px}.total-score{font-size:27px}.target-frame{width:61px;height:61px}.small-btn{padding:7px 9px;font-size:10px}.result-card{padding:20px}.result-next{margin-top:25px}.round-breakdown{grid-template-columns:repeat(5,1fr);gap:4px}.round-breakdown b{font-size:14px}
 }
-
-@media(max-height:680px) and (orientation:landscape){
-  .topbar{grid-template-columns:1.18fr .78fr 1fr .58fr;padding:5px 9px}.brand,.target-card,.round-card,.score-card{min-height:86px}.brand-main{font-size:30px}.brand-sub{display:none}.target-card{grid-template-columns:auto 1fr;grid-template-rows:auto 1fr;padding:5px}.target-title{grid-column:1/3;font-size:11px;padding:2px 9px}.target-display{width:58px;border-width:3px;box-shadow:0 0 0 3px #f1c66c}.target-caption{display:none}.round-icon{height:38px;font-size:19px}.game-stage{height:calc(100dvh - 98px);min-height:350px;padding:2px 3vw 10px}.play-board{min-height:340px;padding:4px 28px}.pour-btn{width:145px}.ingredient-icon{font-size:42px}.ingredient-name{font-size:21px}.vessel-zone{min-height:320px}.round-name{position:absolute;bottom:0;margin:0}.vessel.beaker{width:205px;height:245px}.vessel.straight{width:166px;height:240px}.vessel.tall{width:118px;height:282px}.vessel.cocktail{width:250px;height:270px}.vessel.opaque{width:170px;height:245px}.measure-marks{right:20px;top:46px;bottom:25px;width:92px}.measure-marks span{width:50px}.measure-marks span:after{right:57px;font-size:12px}.measure-marks span.minor{width:28px}
-}
-
-/* --- 2026-09-11 polish pass: cleaner rims / tighter beaker marks / slimmer highball --- */
-/* TARGET now uses the whole lower row for the swatch after removing the caption. */
-.target-card{grid-template-columns:1fr;grid-template-rows:auto 1fr;justify-items:center}
-.target-title{grid-column:1}
-.target-display{align-self:center}
-
-/* Keep beaker graduations comfortably inside the body; no mark can enter the rim/spout area. */
-.measure-marks{top:76px;bottom:40px;right:30px;width:106px;overflow:visible}
-
-/* Glass mouths stay inside each silhouette rather than sticking past the sides. */
-.vessel.straight:before{
-  left:17px;right:17px;top:11px;height:17px;border:0;border-top:4px solid #455f62;
-  border-radius:50%;background:rgba(239,252,252,.62);box-shadow:inset 0 2px 0 rgba(255,255,255,.75)
-}
-.vessel.tall{width:132px;height:370px}
-.vessel.tall:before{
-  left:14px;right:14px;top:10px;height:15px;border:0;border-top:4px solid #435e61;
-  border-radius:50%;background:rgba(239,252,252,.6);box-shadow:inset 0 2px 0 rgba(255,255,255,.72)
-}
-.vessel.tall .vessel-inner{left:10px;right:10px}
-.vessel.tall .glass-highlight{left:25px;width:9px}
-.vessel.opaque:after{
-  left:15px;right:15px;top:10px;height:17px;border:0;border-top:4px solid #153b3f;
-  border-radius:50%;background:linear-gradient(#548083,#244f53);box-shadow:inset 0 3px 0 rgba(255,255,255,.11)
-}
-
-/* Slightly finer visible stream to match the gentler trickle audio. */
-.pour-stream{width:10px;height:108px;opacity:.94}
-
-@media (max-width:760px){
-  .measure-marks{right:28px;top:70px;bottom:38px}
-  .vessel.tall{width:120px;height:344px}
-}
-@media (max-width:950px) and (orientation:landscape){
-  .measure-marks{right:22px;top:61px;bottom:33px;width:86px}
-  .vessel.tall{width:100px;height:282px}
-}
-
-
-/* --- 2026-09-11 HUD/audio polish pass --- */
-/* Gameplay HUD: no title logo; keep only target / round / score information. */
-.topbar{
-  grid-template-columns:minmax(220px,.9fr) minmax(360px,1.45fr) minmax(150px,.58fr);
-  gap:14px;
-}
-.brand{display:none!important}
-
-/* Guarantee the target swatch is visually centered in its card at every width. */
-.target-card{
-  display:flex!important;
-  flex-direction:column;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:10px;
-  padding:11px 16px!important;
-}
-.target-title{align-self:center!important}
-.target-display{
-  align-self:center!important;
-  justify-self:center!important;
-  margin:0 auto!important;
-}
-
-/* Result pacing: separate the action button from the result details. */
-.result-card #nextBtn{margin-top:28px}
-
-/* Beaker scale: four clean major graduations only. Nothing is allowed near/through the rim. */
-.measure-marks{
-  top:86px!important;
-  bottom:43px!important;
-  right:30px!important;
-  width:106px!important;
-  overflow:hidden!important;
-}
-.measure-marks span{height:5px}
-
-@media(max-width:900px){
-  .topbar{grid-template-columns:minmax(130px,.85fr) minmax(250px,1.45fr) minmax(110px,.62fr)}
-  .target-card{grid-column:auto;min-height:118px}
-  .round-card{grid-column:auto;min-height:118px}
-  .score-card{grid-column:auto;grid-row:auto;min-height:118px}
-}
-
-@media(max-width:620px){
-  .topbar{grid-template-columns:.9fr 1.55fr;grid-template-rows:auto auto}
-  .target-card{grid-column:1;grid-row:1}
-  .round-card{grid-column:2;grid-row:1}
-  .score-card{grid-column:1/3;grid-row:2;min-height:72px}
-}
-
-@media(max-height:680px) and (orientation:landscape){
-  .topbar{grid-template-columns:minmax(150px,.88fr) minmax(330px,1.55fr) minmax(115px,.55fr);padding:5px 9px}
-  .target-card,.round-card,.score-card{min-height:86px}
-  .target-card{grid-template-columns:none!important;grid-template-rows:none!important;padding:5px 8px!important;gap:4px}
-  .target-title{font-size:11px;padding:2px 9px}
-  .target-display{width:58px}
-  .measure-marks{top:68px!important;bottom:31px!important;right:22px!important;width:86px!important}
-}
-
-/* --- 2026-09-11e: no emoji UI / fixed corner controls / test-tube slim round 3 --- */
-[hidden]{display:none!important}
-
-/* Decorative tropical forms are CSS-only; no emoji glyphs. */
-.window-palm{left:18px;bottom:-14px;width:92px;height:126px;font-size:0;transform:rotate(-12deg);z-index:4}
-.window-palm:before{content:"";position:absolute;left:43px;bottom:0;width:10px;height:88px;border-radius:9px;background:linear-gradient(90deg,#875532,#c18650,#75472b);transform:rotate(8deg)}
-.window-palm:after{content:"";position:absolute;left:4px;top:3px;width:84px;height:62px;background:conic-gradient(from 18deg at 50% 76%,#2f7a50 0 11%,transparent 11% 19%,#3f9461 19% 31%,transparent 31% 39%,#2f7a50 39% 51%,transparent 51% 59%,#4a9f68 59% 72%,transparent 72% 80%,#2f7a50 80% 92%,transparent 92%);border-radius:50%}
-.leaf-deco{width:118px;height:118px;font-size:0;opacity:.45;background:radial-gradient(ellipse at 30% 70%,#3d8a5a 0 18%,transparent 19%),radial-gradient(ellipse at 62% 42%,#4b9a65 0 20%,transparent 21%),radial-gradient(ellipse at 70% 78%,#2f7655 0 18%,transparent 19%);filter:drop-shadow(0 10px 8px rgba(45,86,51,.14))}
-
-/* TITLE + SOUND live in the extreme top-right; SOUND is always the rightmost item. */
-.corner-controls{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:90;display:flex;gap:9px;align-items:center}
-.hud-btn{height:42px;border:3px solid #6d432c;border-radius:13px;background:rgba(255,249,232,.96);color:#4b2b1b;padding:0 13px;font-size:11px;font-weight:1000;letter-spacing:.08em;box-shadow:0 4px 0 #6d432c,0 7px 18px rgba(67,39,24,.18);cursor:pointer}
-.hud-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #6d432c,0 4px 10px rgba(67,39,24,.16)}
-.hud-btn.sound-btn{position:static;width:auto;min-width:92px;height:42px;font-size:10px}
-.hud-btn.sound-btn.off{background:#e2ded4;color:#74675e}
-.hud-btn.title-btn{min-width:64px}
-.score-card .sound-btn{display:none!important}
-
-/* Ingredient art uses simple CSS marks instead of emoji. */
-.ingredient-symbol{position:relative;display:block;width:74px;height:74px;margin-bottom:2px}
-.coffee-symbol:before{content:"";position:absolute;inset:8px 13px;border-radius:52% 48% 48% 52% / 60% 52% 48% 40%;background:linear-gradient(145deg,#9b6a48,#4c291c);transform:rotate(-28deg);box-shadow:inset 7px 5px 10px rgba(255,255,255,.12),0 4px 7px rgba(45,25,16,.25)}
-.coffee-symbol:after{content:"";position:absolute;left:34px;top:13px;width:6px;height:48px;border-radius:50%;border-left:3px solid rgba(245,208,165,.55);transform:rotate(18deg)}
-.milk-symbol:before{content:"";position:absolute;left:19px;top:9px;width:38px;height:54px;border:4px solid #826d5c;border-radius:10px 10px 16px 16px;background:linear-gradient(#fffdf5 0 24%,#f4ead2 24% 100%);box-shadow:inset 8px 0 10px rgba(255,255,255,.72)}
-.milk-symbol:after{content:"";position:absolute;left:29px;top:2px;width:18px;height:13px;border:4px solid #826d5c;border-bottom:0;border-radius:7px 7px 2px 2px;background:#fffdf5}
-
-/* Round strip: CSS silhouettes, not emoji. */
-.round-icon{font-size:0}
-.round-vessel-icon{position:relative;display:block;width:28px;height:36px}
-.round-vessel-icon:before,.round-vessel-icon:after{content:"";position:absolute;box-sizing:border-box}
-.mini-beaker:before{left:4px;right:4px;top:4px;bottom:2px;border:3px solid #66797a;border-top:0;border-radius:2px 2px 6px 6px;background:rgba(255,255,255,.45)}
-.mini-beaker:after{left:1px;right:2px;top:1px;height:8px;border:3px solid #66797a;border-radius:50%}
-.mini-straight:before{left:5px;right:5px;top:3px;bottom:2px;border:3px solid #66797a;border-radius:5px 5px 8px 8px;background:rgba(255,255,255,.45)}
-.mini-tall:before{left:10px;right:10px;top:1px;bottom:1px;border:3px solid #66797a;border-radius:5px 5px 9px 9px;background:rgba(255,255,255,.45)}
-.mini-cocktail:before{left:1px;right:1px;top:2px;height:18px;border:3px solid #66797a;clip-path:polygon(0 0,100% 0,60% 100%,40% 100%);background:rgba(255,255,255,.45)}
-.mini-cocktail:after{left:13px;top:19px;width:3px;height:14px;background:#66797a;box-shadow:-8px 13px 0 1px #66797a,8px 13px 0 1px #66797a}
-.mini-opaque:before{left:5px;right:5px;top:3px;bottom:2px;border:3px solid #34585a;border-radius:5px 5px 8px 8px;background:#34585a}
-
-/* Round 3 is now almost test-tube thin. */
-.vessel.tall{width:76px!important;height:382px}
-.vessel.tall .vessel-inner{left:8px!important;right:8px!important;top:11px;bottom:9px;border-width:4px;border-top-width:5px;border-radius:10px 10px 30px 30px}
-.vessel.tall:before{left:8px!important;right:8px!important;top:8px!important;height:13px!important;border-top-width:4px!important}
-.vessel.tall:after{left:18px;right:18px;bottom:3px;height:13px}
-.vessel.tall .glass-highlight{left:18px!important;top:39px;width:6px!important;height:286px}
-
-/* Keep corner controls clear of HUD content. */
-.topbar{padding-right:210px}
-
-@media(max-width:900px){
-  .topbar{padding-right:185px}
-  .hud-btn{height:38px;padding:0 10px}
-  .hud-btn.sound-btn{height:38px;min-width:84px}
-  .vessel.tall{width:66px!important;height:350px}
-  .vessel.tall .glass-highlight{left:16px!important;height:260px}
-}
-@media(max-width:620px){
-  .corner-controls{top:8px;right:8px;gap:6px}
-  .hud-btn{height:34px;border-width:2px;border-radius:10px;padding:0 8px;font-size:9px;box-shadow:0 3px 0 #6d432c}
-  .hud-btn.sound-btn{height:34px;min-width:72px;font-size:8px}
-  .topbar{padding-top:50px;padding-right:8px}
-  .vessel.tall{width:58px!important;height:338px}
-  .vessel.tall .glass-highlight{left:14px!important;width:5px!important;height:250px}
-}
-@media(max-height:680px) and (orientation:landscape){
-  .corner-controls{top:6px;right:8px}
-  .hud-btn{height:31px;padding:0 8px;font-size:8px}
-  .hud-btn.sound-btn{height:31px;min-width:68px;font-size:7px}
-  .topbar{padding-right:165px}
-  .vessel.tall{width:52px!important;height:286px}
-  .vessel.tall .glass-highlight{left:13px!important;height:205px}
-}
-
-
-/* --- 2026-09-11 asset pass: image-based vessels, centered target, simpler round HUD --- */
-.target-card{
-  grid-template-columns:1fr!important;
-  grid-template-rows:auto 1fr!important;
-  justify-items:center!important;
-  align-items:center!important;
-}
-.target-title{grid-column:1!important}
-.target-display{display:grid;place-items:center;margin-inline:auto}
-.target-swatch{margin:auto}
-
-.round-card{
-  align-items:center;
-  justify-content:center;
-  padding:8px 14px;
-}
-.round-label{margin-bottom:0!important}
-.round-icons{display:none!important}
-
-.result-card #nextBtn{margin-top:22px}
-
-.rule-item{align-items:center;text-align:center;padding-top:14px!important;padding-bottom:14px!important}
-.rule-illus{position:relative;display:block;width:84px;height:54px;margin:0 auto 8px;border-radius:14px;background:linear-gradient(#fffdf6,#f8edd0);border:3px solid #c89b61;box-shadow:inset 0 3px 0 rgba(255,255,255,.85)}
-.rule-illus i{position:absolute;display:block}
-.rule-oneuse i:nth-child(1),.rule-oneuse i:nth-child(2){bottom:12px;width:18px;height:22px;border-radius:6px;border:3px solid #7a5338;background:#fff8e4}
-.rule-oneuse i:nth-child(1){left:16px;background:linear-gradient(145deg,#8b5b40,#57301f);border-color:#6a4027}
-.rule-oneuse i:nth-child(2){right:16px}
-.rule-color i:nth-child(1),.rule-color i:nth-child(2),.rule-color i:nth-child(3){bottom:12px;width:17px;height:24px;border-radius:6px;border:3px solid #8a6a54}
-.rule-color i:nth-child(1){left:12px;background:#5f3220}
-.rule-color i:nth-child(2){left:33px;background:#a6653a}
-.rule-color i:nth-child(3){left:54px;background:#f2e8c0}
-.rule-volume i:nth-child(1){left:24px;right:24px;bottom:8px;height:30px;border:3px solid #7f5d43;border-radius:8px 8px 12px 12px;background:linear-gradient(180deg,transparent 0 25%,#c68d5d 25% 100%)}
-.rule-volume i:nth-child(2){left:29px;right:29px;bottom:27px;height:4px;background:#fff7e2}
-.rule-volume i:nth-child(3){left:29px;right:29px;bottom:36px;height:4px;background:#fff7e2}
-.rule-overflow i:nth-child(1){left:24px;right:24px;bottom:12px;height:24px;border:3px solid #7f5d43;border-radius:7px 7px 10px 10px;background:linear-gradient(180deg,#b9784d 0 20%,#f5e4c1 20% 100%)}
-.rule-overflow i:nth-child(2){left:18px;top:12px;width:12px;height:12px;border-radius:50%;background:#c89b61;box-shadow:28px -6px 0 #c89b61,48px 3px 0 #c89b61}
-.rule-overflow i:nth-child(3){display:none}
-
-.vessel,
-.vessel.beaker,.vessel.straight,.vessel.tall,.vessel.cocktail,.vessel.opaque{
-  filter:drop-shadow(0 16px 12px rgba(69,47,32,.18));
-}
-.vessel::before,.vessel::after,
-.vessel .glass-highlight,
-.vessel .vessel-detail{display:none!important;content:none!important}
-.vessel-art{position:absolute;inset:0;width:100%;height:100%;z-index:10;pointer-events:none;object-fit:contain}
-.vessel-inner{background:transparent!important;border:none!important;box-shadow:none!important}
-.liquid{box-shadow:inset 0 4px 11px rgba(118,93,63,.11), inset 0 -10px 22px rgba(255,255,255,.1)}
-
-.vessel.beaker{width:300px;height:320px}
-.vessel.beaker .vessel-inner{left:73px;right:74px;top:68px;bottom:34px;border-radius:2px 2px 24px 24px}
-.measure-marks{top:97px!important;bottom:56px!important;right:64px!important;width:112px!important}
-.measure-marks span{height:5px!important;width:58px!important}
-.measure-marks span:after{right:68px!important;top:-11px!important}
-
-.vessel.straight{width:230px;height:320px}
-.vessel.straight .vessel-inner{left:44px;right:44px;top:48px;bottom:38px;border-radius:12px 12px 28px 28px}
-
-.vessel.tall{width:120px!important;height:390px}
-.vessel.tall .vessel-inner{left:42px;right:42px;top:39px;bottom:35px;border-radius:10px 10px 18px 18px}
-
-.vessel.cocktail{width:360px;height:360px}
-.vessel.cocktail .vessel-inner{left:41px;right:41px;top:55px;height:160px;bottom:auto;clip-path:polygon(0 0,100% 0,60% 100%,40% 100%)}
-.vessel.cocktail .liquid-surface{height:5px}
-
-.vessel.opaque{width:230px;height:320px}
-.vessel.opaque .vessel-inner{left:44px;right:44px;top:48px;bottom:38px;border-radius:12px 12px 28px 28px}
-
-@media(max-width:900px){
-  .round-card{min-height:88px!important}
-}
-@media(max-width:430px){
-  .vessel.beaker{width:268px;height:286px}
-  .vessel.beaker .vessel-inner{left:65px;right:66px;top:61px;bottom:31px}
-  .measure-marks{top:86px!important;bottom:50px!important;right:51px!important;width:95px!important}
-  .measure-marks span{width:48px!important}
-  .measure-marks span:after{right:56px!important;font-size:13px!important}
-  .vessel.straight{width:208px;height:286px}
-  .vessel.straight .vessel-inner{left:40px;right:40px;top:43px;bottom:34px}
-  .vessel.tall{width:102px!important;height:346px}
-  .vessel.tall .vessel-inner{left:36px;right:36px;top:34px;bottom:31px}
-  .vessel.cocktail{width:308px;height:308px}
-  .vessel.cocktail .vessel-inner{left:36px;right:36px;top:48px;height:138px}
-  .vessel.opaque{width:206px;height:286px}
-  .vessel.opaque .vessel-inner{left:40px;right:40px;top:43px;bottom:34px}
-}
-@media(max-height:680px) and (orientation:landscape){
-  .measure-marks{top:79px!important;bottom:46px!important;right:52px!important;width:88px!important}
-  .measure-marks span{width:44px!important;height:4px!important}
-  .measure-marks span:after{right:52px!important;font-size:12px!important}
-  .vessel.beaker{width:235px;height:252px}
-  .vessel.beaker .vessel-inner{left:57px;right:58px;top:54px;bottom:26px}
-  .vessel.straight{width:176px;height:244px}
-  .vessel.straight .vessel-inner{left:34px;right:34px;top:37px;bottom:28px}
-  .vessel.tall{width:84px!important;height:292px}
-  .vessel.tall .vessel-inner{left:29px;right:29px;top:29px;bottom:26px}
-  .vessel.cocktail{width:258px;height:258px}
-  .vessel.cocktail .vessel-inner{left:30px;right:30px;top:40px;height:116px}
-  .vessel.opaque{width:176px;height:244px}
-  .vessel.opaque .vessel-inner{left:34px;right:34px;top:37px;bottom:28px}
-}
-
-
-/* Adopted vessel art pass: beaker graduations are baked into the SVG asset. */
-.measure-marks{display:none}
-
-
-/* === Generated vessel artwork integration (final) === */
-.vessel{overflow:visible!important;filter:drop-shadow(0 16px 13px rgba(59,43,31,.19))!important}
-.vessel-art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;z-index:12!important;pointer-events:none!important}
-.vessel-inner{position:absolute!important;z-index:8!important;overflow:hidden!important;background:transparent!important;border:0!important;box-shadow:none!important}
-.vessel::before,.vessel::after,.vessel .glass-highlight,.vessel .vessel-detail{display:none!important}
-.measure-marks{display:none!important}
-.liquid{left:0!important;right:0!important;bottom:0!important;width:auto!important;z-index:1!important;box-shadow:inset 0 5px 9px rgba(255,255,255,.18), inset 0 -8px 14px rgba(70,40,25,.12)!important}
-.liquid-surface{height:5px!important;background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(80,55,40,.24))!important;border-bottom:1px solid rgba(66,46,34,.35)!important}
-
-/* Generated beaker: the 100 mL mark is at the brim; artwork already contains 20 mL labels and 10 mL submarks. */
-.vessel.beaker{width:286px!important;height:324px!important}
-.vessel.beaker .vessel-inner{left:11.5%!important;right:10.5%!important;top:10.5%!important;bottom:12.5%!important;border-radius:3px 3px 25px 25px!important}
-
-/* Generated straight rocks glass. */
-.vessel.straight{width:218px!important;height:270px!important}
-.vessel.straight .vessel-inner{left:10.5%!important;right:10.5%!important;top:7.5%!important;bottom:18.5%!important;border-radius:7px 7px 24px 24px!important}
-
-/* Generated test-tube glass: intentionally extremely narrow. */
-.vessel.tall{width:58px!important;height:365px!important}
-.vessel.tall .vessel-inner{left:16%!important;right:16%!important;top:3.5%!important;bottom:7.5%!important;border-radius:8px 8px 22px 22px!important}
-
-/* Generated martini glass; only the bowl is fillable. */
-.vessel.cocktail{width:274px!important;height:370px!important}
-.vessel.cocktail .vessel-inner{left:4.5%!important;right:4.5%!important;top:4%!important;height:40.5%!important;bottom:auto!important;clip-path:polygon(0 0,100% 0,58% 100%,42% 100%)!important}
-
-/* Generated opaque tumbler. Liquid is kept for scoring but hidden by the opaque artwork. */
-.vessel.opaque{width:208px!important;height:291px!important}
-.vessel.opaque .vessel-inner{left:9%!important;right:9%!important;top:7%!important;bottom:7%!important;border-radius:9px 9px 28px 28px!important}
-
-/* Keep the stream aligned with the actual vessel mouth. */
-.vessel-zone .pour-stream{top:18px!important}
-
-@media(max-width:620px){
-  .vessel.beaker{width:246px!important;height:279px!important}
-  .vessel.straight{width:186px!important;height:230px!important}
-  .vessel.tall{width:50px!important;height:315px!important}
-  .vessel.cocktail{width:235px!important;height:317px!important}
-  .vessel.opaque{width:180px!important;height:252px!important}
-}
-
-@media(max-height:680px) and (orientation:landscape){
-  .vessel.beaker{width:205px!important;height:232px!important}
-  .vessel.straight{width:158px!important;height:196px!important}
-  .vessel.tall{width:40px!important;height:250px!important}
-  .vessel.cocktail{width:195px!important;height:263px!important}
-  .vessel.opaque{width:150px!important;height:210px!important}
+@media (max-height:690px) and (orientation:landscape){
+  .game-screen{padding-top:56px}.corner-controls{top:7px}.hud{height:95px}.hud-title{font-size:11px}.target-frame{width:57px;height:57px}.round-label{font-size:17px}.total-score{font-size:31px}.playfield{grid-template-columns:170px 1fr 170px}.pour-btn{height:145px;width:150px}.pour-btn strong{font-size:21px}.vessel-canvas{width:auto;height:100%;max-width:430px}.result-card{transform:scale(.88)}
 }

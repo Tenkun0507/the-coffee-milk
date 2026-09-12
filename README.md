@@ -1,30 +1,19 @@
 # THE COFFEE MILK
 
-GitHub Pages でそのまま遊べるブラウザゲームです。
+A five-round browser game. Match the target coffee/milk color and fill each vessel as close to the edge as possible without overflowing.
 
-## 遊び方
-- 全5ラウンド。
-- 毎ラウンド、TARGET に表示された色へコーヒー牛乳を近づけます。
-- COFFEE / MILK はそれぞれ1回だけ使用可能。ボタンを押している間だけ注ぎます。
-- 色の一致度と充填率を非線形評価し、`COLOR × VOLUME` がラウンド得点になります。
-- 溢れたラウンドは0点です。
-- 5ラウンド合計が最終スコアです。
-- ROUND 5 は中身が見えません。満杯に近づいた時だけ鳴る高くなる音を手掛かりにします。
+## Run
+Open `index.html` directly, or host the folder with GitHub Pages.
 
-## ラウンド
-1. BEAKER — 目盛り付き
-2. STRAIGHT GLASS — 目盛りなし
-3. SLIM GLASS — 試験管ほど細いグラス
-4. COCKTAIL GLASS — 形状で容量感覚が狂う
-5. BLIND GLASS — 中身が見えない
+## Core rules
+- Five rounds: beaker, straight glass, test tube, cocktail glass, blind cup.
+- Target coffee ratio is randomly selected from 10% to 90% each round.
+- COFFEE and MILK can each be held once per round. Releasing a button consumes that pour.
+- Physical pour rate is identical for every vessel. Smaller capacities therefore fill faster.
+- Round score = nonlinear color score × nonlinear volume score, maximum 5,000.
+- Overflow = 0 points for the round.
+- Maximum final score = 25,000.
+- The final blind cup hides the liquid; the rising warning tone near full is the main cue.
 
-## 画面操作
-- 右上 `TITLE`：ゲーム進行とスコアをリセットしてタイトルへ戻る
-- 右上 `SOUND ON / OFF`：BGM・SEの切り替え
-
-## GitHub Pages
-このフォルダ内のファイルをリポジトリ直下へアップロードし、GitHub の `Settings > Pages` から公開してください。
-
-
-## Files
-- `assets/` contains the vessel SVG illustrations used in-game.
+## Assets
+The five vessel SVGs in `assets/` are the supplied game assets and are displayed without redrawing their appearance.

@@ -1,143 +1,127 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#f2b45c" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <meta name="theme-color" content="#76cbd2" />
   <title>THE COFFEE MILK</title>
-  <link rel="stylesheet" href="style.css?v=20260911h" />
+  <link rel="stylesheet" href="style.css?v=20260912a" />
 </head>
 <body>
   <div id="app" class="app">
-    <div class="sun"></div>
-    <div class="window-view" aria-hidden="true">
-      <div class="sea"></div><div class="island"></div><div class="window-palm"></div>
-    </div>
-    <div class="kitchen-shelf shelf-a" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="kitchen-shelf shelf-b" aria-hidden="true"><i></i><i></i></div>
-    <div class="leaf-deco leaf-left" aria-hidden="true"></div>
-    <div class="leaf-deco leaf-right" aria-hidden="true"></div>
-
-    <div class="corner-controls" aria-label="game controls">
-      <button id="titleBtn" class="hud-btn title-btn" type="button" hidden>TITLE</button>
-      <button id="soundBtn" class="hud-btn sound-btn" type="button" aria-label="sound on/off">SOUND ON</button>
+    <div class="kitchen-bg" aria-hidden="true">
+      <div class="window"><div class="sky"></div><div class="sea"></div><div class="palm palm-a"></div><div class="palm palm-b"></div></div>
+      <div class="tiles"></div>
+      <div class="shelf shelf-a"><i></i><i></i><i></i></div>
+      <div class="shelf shelf-b"><i></i><i></i></div>
+      <div class="counter"></div>
     </div>
 
-    <header class="topbar">
-      <section class="target-card" aria-label="target color">
-        <div class="target-title">TARGET</div>
-        <div class="target-display">
-          <div id="targetSwatch" class="target-swatch"></div>
-        </div>
-      </section>
+    <section id="titleScreen" class="screen title-screen active" aria-label="Title screen">
+      <div class="title-panel">
+        <div class="brand-kicker">PERFECT MIXING GAME</div>
+        <h1>THE<br><span>COFFEE MILK</span></h1>
+        <p class="title-copy">Match the color. Fill it to the edge. Do not spill.</p>
 
-      <section class="round-card">
-        <div class="round-label">ROUND <strong id="roundText">1 / 5</strong></div>
-        <div id="roundIcons" class="round-icons" aria-hidden="true"></div>
-      </section>
-
-      <section class="score-card">
-        <span>TOTAL SCORE</span>
-        <strong id="totalScore">0</strong>
-      </section>
-    </header>
-
-    <main class="game-stage">
-      <div class="counter-back" aria-hidden="true"></div>
-      <section class="play-board">
-        <div class="pour-side">
-          <button id="coffeeBtn" class="pour-btn coffee-btn" type="button">
-            <span class="ingredient-symbol coffee-symbol" aria-hidden="true"></span>
-            <span class="ingredient-name">COFFEE</span>
-            <span id="coffeeUse" class="use-badge">1 USE</span>
-          </button>
+        <div class="rule-grid">
+          <article class="rule-card">
+            <div class="rule-art one-use"><i></i><i></i></div>
+            <b>ONE USE</b><span>Each pour button can be used once.</span>
+          </article>
+          <article class="rule-card">
+            <div class="rule-art color-art"><i></i><i></i><i></i></div>
+            <b>COLOR</b><span>Match the target color as closely as possible.</span>
+          </article>
+          <article class="rule-card">
+            <div class="rule-art volume-art"><i></i></div>
+            <b>VOLUME</b><span>The closer to full, the higher the score.</span>
+          </article>
+          <article class="rule-card">
+            <div class="rule-art overflow-art"><i></i><i></i><i></i></div>
+            <b>OVERFLOW</b><span>Spill even a little and the round is worth zero.</span>
+          </article>
         </div>
 
-        <div class="vessel-zone">
-          <div id="pourStream" class="pour-stream hidden"></div>
-          <div id="vessel" class="vessel beaker" aria-label="drink container">
-            <div class="vessel-inner">
+        <button id="startBtn" class="primary-btn">START</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen game-screen" aria-label="Game">
+      <div class="corner-controls">
+        <button id="titleBtn" class="small-btn">TITLE</button>
+        <button id="soundBtn" class="small-btn" aria-pressed="true">SOUND ON</button>
+      </div>
+
+      <header class="hud">
+        <div class="hud-card target-card">
+          <div class="hud-title">TARGET</div>
+          <div class="target-frame"><div id="targetSwatch" class="target-swatch"></div></div>
+        </div>
+        <div class="hud-card round-card">
+          <div id="roundLabel" class="round-label">ROUND 1 / 5</div>
+        </div>
+        <div class="hud-card score-card">
+          <div class="score-label">TOTAL SCORE</div>
+          <div id="totalScore" class="total-score">0</div>
+        </div>
+      </header>
+
+      <main class="playfield">
+        <button id="coffeeBtn" class="pour-btn coffee-btn" data-liquid="coffee">
+          <span class="pour-icon coffee-icon"><i></i></span>
+          <strong>COFFEE</strong>
+          <small>1 USE</small>
+        </button>
+
+        <div id="vesselArea" class="vessel-area">
+          <div id="pourStream" class="pour-stream"></div>
+          <div id="vesselCanvas" class="vessel-canvas">
+            <div id="liquidMask" class="liquid-mask">
               <div id="liquid" class="liquid"><div class="liquid-surface"></div></div>
             </div>
-            <img id="vesselArt" class="vessel-art" src="assets/beaker.svg" alt="" />
-            <div id="measureMarks" class="measure-marks"></div>
-            <div class="glass-highlight"></div>
-            <div class="vessel-detail"></div>
-            <div id="opaqueCover" class="opaque-cover"></div>
-          </div>
-          <div id="roundName" class="round-name">BEAKER</div>
-        </div>
-
-        <div class="pour-side">
-          <button id="milkBtn" class="pour-btn milk-btn" type="button">
-            <span class="ingredient-symbol milk-symbol" aria-hidden="true"></span>
-            <span class="ingredient-name">MILK</span>
-            <span id="milkUse" class="use-badge">1 USE</span>
-          </button>
-        </div>
-      </section>
-    </main>
-
-    <div id="toast" class="toast hidden"></div>
-
-    <div id="startModal" class="modal open">
-      <div class="modal-card start-card">
-        <span class="mini-badge">5 ROUND SCORE ATTACK</span>
-        <h1>THE COFFEE MILK</h1>
-        <p>見本の色に合わせながら、溢れないギリギリまで注げ。</p>
-        <div class="rule-grid">
-          <div class="rule-item">
-            <span class="rule-illus rule-oneuse" aria-hidden="true"><i></i><i></i></span>
-            <b>ONE USE</b><span>各ボタンは1回だけ</span>
-          </div>
-          <div class="rule-item">
-            <span class="rule-illus rule-color" aria-hidden="true"><i></i><i></i><i></i></span>
-            <b>COLOR</b><span>色が近いほど高得点</span>
-          </div>
-          <div class="rule-item">
-            <span class="rule-illus rule-volume" aria-hidden="true"><i></i><i></i><i></i></span>
-            <b>VOLUME</b><span>満杯に近いほど高得点</span>
-          </div>
-          <div class="rule-item">
-            <span class="rule-illus rule-overflow" aria-hidden="true"><i></i><i></i><i></i></span>
-            <b>OVERFLOW</b><span>溢れたラウンドは0点</span>
+            <img id="vesselArt" class="vessel-art" src="assets/beaker_game.svg" alt="" draggable="false" />
           </div>
         </div>
-        <button id="startBtn" class="main-btn" type="button">START MIXING</button>
+
+        <button id="milkBtn" class="pour-btn milk-btn" data-liquid="milk">
+          <span class="pour-icon milk-icon"><i></i></span>
+          <strong>MILK</strong>
+          <small>1 USE</small>
+        </button>
+      </main>
+
+      <div id="resultOverlay" class="overlay" aria-hidden="true">
+        <div class="result-card">
+          <div id="resultEyebrow" class="result-eyebrow">ROUND 1</div>
+          <h2 id="resultTitle">RESULT</h2>
+          <div class="result-metrics">
+            <div><span>COLOR</span><b id="colorScore">0</b></div>
+            <div><span>VOLUME</span><b id="volumeScore">0</b></div>
+          </div>
+          <div class="round-score-label">ROUND SCORE</div>
+          <div id="roundScore" class="round-score">0</div>
+          <p id="resultNote" class="result-note"></p>
+          <button id="nextBtn" class="primary-btn result-next">NEXT ROUND</button>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div id="resultModal" class="modal">
-      <div class="modal-card result-card">
-        <span id="resultKicker" class="mini-badge">ROUND RESULT</span>
-        <h2 id="resultTitle">NICE MIX!</h2>
-        <div class="result-main-score"><span id="roundScore">0</span><small> pts</small></div>
-        <div class="result-grid">
-          <div class="metric"><span>COLOR</span><strong id="colorScore">0</strong><small>/100</small></div>
-          <div class="metric multiply">×</div>
-          <div class="metric"><span>VOLUME</span><strong id="volumeScore">0</strong><small>/100</small></div>
-        </div>
-        <div class="result-detail">
-          <div><span>見本</span><b id="targetRatioText">--</b></div>
-          <div><span>完成</span><b id="actualRatioText">--</b></div>
-          <div><span>充填率</span><b id="finalFillText">--</b></div>
-        </div>
-        <button id="nextBtn" class="main-btn" type="button">NEXT ROUND</button>
+    <section id="finalScreen" class="screen final-screen" aria-label="Final result">
+      <div class="corner-controls">
+        <button id="finalTitleBtn" class="small-btn">TITLE</button>
+        <button id="finalSoundBtn" class="small-btn">SOUND ON</button>
       </div>
-    </div>
-
-    <div id="finalModal" class="modal">
-      <div class="modal-card final-card">
-        <span class="mini-badge">FINAL SCORE</span>
-        <h2>COFFEE MILK COMPLETE!</h2>
+      <div class="final-card">
+        <div class="brand-kicker">5 ROUNDS COMPLETE</div>
+        <h2>THE COFFEE MILK</h2>
+        <div class="final-score-label">FINAL SCORE</div>
         <div id="finalScore" class="final-score">0</div>
-        <div id="rankText" class="rank-text">RANK C</div>
         <div id="roundBreakdown" class="round-breakdown"></div>
-        <button id="retryBtn" class="main-btn" type="button">PLAY AGAIN</button>
+        <button id="againBtn" class="primary-btn">PLAY AGAIN</button>
       </div>
-    </div>
+    </section>
   </div>
 
-  <script src="script.js?v=20260911h"></script>
+  <script src="script.js?v=20260912a"></script>
 </body>
 </html>
