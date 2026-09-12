@@ -3,11 +3,15 @@
 
   const $ = (q) => document.querySelector(q);
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-  const fmt = (n) => Math.round(n).toLocaleString('en-US');
+  let currentLang = (() => {
+    try { return localStorage.getItem('coffeeMilkLang') || (navigator.language && navigator.language.toLowerCase().startsWith('ja') ? 'ja' : 'en'); } catch (_) { return 'en'; }
+  })();
+  const fmt = (n) => Math.round(n).toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US');
 
   const els = {
     titleScreen: $('#titleScreen'), gameScreen: $('#gameScreen'), finalScreen: $('#finalScreen'),
     startBtn: $('#startBtn'), titleBtn: $('#titleBtn'), finalTitleBtn: $('#finalTitleBtn'),
+    titleLangBtn: $('#titleLangBtn'), langBtn: $('#langBtn'), finalLangBtn: $('#finalLangBtn'),
     soundBtn: $('#soundBtn'), finalSoundBtn: $('#finalSoundBtn'),
     targetSwatch: $('#targetSwatch'), roundLabel: $('#roundLabel'), totalScore: $('#totalScore'),
     coffeeBtn: $('#coffeeBtn'), milkBtn: $('#milkBtn'), vesselArea: $('#vesselArea'), vesselCanvas: $('#vesselCanvas'),
@@ -44,6 +48,117 @@
   let lastPaint = 0;
   const PAINT_INTERVAL = 1000 / 36;
   const assetPromises = new Map();
+
+
+  const I18N = {
+    en: {
+      brandKicker:'PERFECT MIXING GAME',
+      titleCopy:'Match the color. Fill it to the edge. Do not spill.',
+      ruleOneTitle:'ONE USE', ruleOneDesc:'Each pour button can be used once.',
+      ruleColorTitle:'COLOR', ruleColorDesc:'Match the target color as closely as possible.',
+      ruleVolumeTitle:'VOLUME', ruleVolumeDesc:'The closer to full, the higher the score.',
+      ruleOverflowTitle:'OVERFLOW', ruleOverflowDesc:'Spill even a little and the round is worth zero.',
+      start:'START', titleBtn:'TITLE', target:'TARGET', totalScoreLabel:'TOTAL SCORE',
+      coffee:'COFFEE', milk:'MILK', oneUseSmall:'1 USE',
+      color:'COLOR', volume:'VOLUME', roundScoreLabel:'ROUND SCORE',
+      nextRound:'NEXT ROUND', finalResult:'FINAL RESULT',
+      finalKicker:'5 ROUNDS COMPLETE', finalScoreLabel:'FINAL SCORE', playAgain:'PLAY AGAIN',
+      soundOn:'SOUND ON', soundOff:'SOUND OFF',
+      result:'RESULT', overflowTitle:'OVERFLOW',
+      roundLabel:(n,total)=>`ROUND ${n} / ${total}`,
+      roundEyebrow:n=>`ROUND ${n}`,
+      noteOverflow:'The cup overflowed. This round scores zero.',
+      notePerfect:'Almost perfect.',
+      noteGreat:'Great mix. Push the fill level a little further.',
+      noteColorMiss:'The color was the biggest miss.',
+      noteVolumeMiss:'Good color. A fuller cup would score much higher.',
+      noteBalance:'Good balance. Precision is everything.'
+    },
+    ja: {
+      brandKicker:'完璧な一杯をつくれ',
+      titleCopy:'見本の色に合わせて、できるだけたっぷり。こぼしたら0点。',
+      ruleOneTitle:'1回のみ', ruleOneDesc:'コーヒーと牛乳は、それぞれ1回だけ注げる。',
+      ruleColorTitle:'色', ruleColorDesc:'見本の色に近いほど高得点。',
+      ruleVolumeTitle:'量', ruleVolumeDesc:'満杯に近いほど高得点。',
+      ruleOverflowTitle:'あふれ', ruleOverflowDesc:'少しでもあふれたら、そのラウンドは0点。',
+      start:'はじめる', titleBtn:'タイトル', target:'見本', totalScoreLabel:'合計スコア',
+      coffee:'コーヒー', milk:'牛乳', oneUseSmall:'1回のみ',
+      color:'色', volume:'量', roundScoreLabel:'ラウンドスコア',
+      nextRound:'次のラウンド', finalResult:'最終結果',
+      finalKicker:'5ラウンド終了', finalScoreLabel:'最終スコア', playAgain:'もう一度遊ぶ',
+      soundOn:'音声 ON', soundOff:'音声 OFF',
+      result:'結果', overflowTitle:'あふれた！',
+      roundLabel:(n,total)=>`ラウンド ${n} / ${total}`,
+      roundEyebrow:n=>`ラウンド ${n}`,
+      noteOverflow:'あふれてしまったため、このラウンドは0点。',
+      notePerfect:'ほぼ完璧！',
+      noteGreat:'かなりいい感じ。あと少しだけ量を攻めよう。',
+      noteColorMiss:'今回は色のズレが一番大きかった。',
+      noteVolumeMiss:'色はいい感じ。もっと満杯に近づけると高得点！',
+      noteBalance:'いいバランス。最後は精度勝負！'
+    }
+  };
+
+  const tr = (key) => I18N[currentLang][key];
+
+  function resultNoteKey(s) {
+    if (state && state.overflow) return 'noteOverflow';
+    if (s.points >= 9000) return 'notePerfect';
+    if (s.points >= 6500) return 'noteGreat';
+    if (s.color < 55) return 'noteColorMiss';
+    if (s.volume < 55) return 'noteVolumeMiss';
+    return 'noteBalance';
+  }
+
+  function updateSoundLabels() {
+    const label = soundOn ? tr('soundOn') : tr('soundOff');
+    els.soundBtn.textContent = label;
+    els.finalSoundBtn.textContent = label;
+  }
+
+  function updateLanguageButtons() {
+    const label = currentLang === 'ja' ? 'EN' : '日本語';
+    [els.titleLangBtn, els.langBtn, els.finalLangBtn].forEach(btn => {
+      if (!btn) return;
+      btn.textContent = label;
+      btn.setAttribute('aria-label', currentLang === 'ja' ? 'Switch to English' : '日本語に切り替え');
+    });
+  }
+
+  function refreshDynamicText() {
+    updateSoundLabels();
+    updateLanguageButtons();
+    if (!state) return;
+    els.roundLabel.textContent = tr('roundLabel')(state.round + 1, ROUNDS.length);
+    els.nextBtn.textContent = state.round === ROUNDS.length - 1 ? tr('finalResult') : tr('nextRound');
+    els.totalScore.textContent = fmt(state.totalScore);
+    if (state.roundFinished && state.results[state.round]) {
+      const s = state.results[state.round];
+      els.resultEyebrow.textContent = tr('roundEyebrow')(state.round + 1);
+      els.resultTitle.textContent = state.overflow ? tr('overflowTitle') : tr('result');
+      els.resultNote.textContent = tr(resultNoteKey(s));
+    }
+    if (els.finalScreen.classList.contains('active')) {
+      els.finalScore.textContent = fmt(state.totalScore);
+      els.roundBreakdown.innerHTML = state.results.map((r, i) => `<div><span>R${i+1}</span><b>${fmt(r.points)}</b></div>`).join('');
+    }
+  }
+
+  function applyLanguage() {
+    document.documentElement.lang = currentLang === 'ja' ? 'ja' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      const value = tr(key);
+      if (typeof value === 'string') el.textContent = value;
+    });
+    refreshDynamicText();
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'ja' ? 'en' : 'ja';
+    try { localStorage.setItem('coffeeMilkLang', currentLang); } catch (_) {}
+    applyLanguage();
+  }
 
   function freshState() {
     return { round:0, totalScore:0, results:[], target:50, coffee:0, milk:0, overflow:false, used:{coffee:false,milk:false}, locked:false, roundFinished:false };
@@ -122,7 +237,7 @@
     state.used = { coffee:false, milk:false };
     lastPaint = 0;
     setTarget();
-    els.roundLabel.textContent = `ROUND ${state.round + 1} / ${ROUNDS.length}`;
+    els.roundLabel.textContent = tr('roundLabel')(state.round + 1, ROUNDS.length);
     els.totalScore.textContent = fmt(state.totalScore);
     els.coffeeBtn.classList.remove('used','pouring'); els.milkBtn.classList.remove('used','pouring');
     els.coffeeBtn.disabled = false; els.milkBtn.disabled = false;
@@ -134,7 +249,7 @@
     els.liquid.style.backgroundColor = mixColor(50);
     els.liquidMask.style.visibility = r.blind ? 'hidden' : 'visible';
     els.resultOverlay.classList.remove('show'); els.resultOverlay.setAttribute('aria-hidden','true');
-    els.nextBtn.textContent = state.round === ROUNDS.length - 1 ? 'FINAL RESULT' : 'NEXT ROUND';
+    els.nextBtn.textContent = state.round === ROUNDS.length - 1 ? tr('finalResult') : tr('nextRound');
 
     await preloadAsset(r.asset);
     try { if (els.vesselArt.decode) await els.vesselArt.decode(); } catch (_) {}
@@ -171,6 +286,7 @@
     els.pourStream.className = `pour-stream active ${type}`;
     updateStreamGeometry();
     lastTime = performance.now();
+    updateWarning(fillRatio());
     raf = requestAnimationFrame(tickPour);
     playClick(type);
   }
@@ -226,7 +342,7 @@
     // Strong nonlinear curves, then each component is rounded UP before multiplication.
     const colorRaw = totalMl() <= 0 ? 0 : 100 * Math.exp(-34 * error * error);
     const f = clamp(fillRatio(), 0, 1);
-    const volumeRaw = 100 * Math.pow(f, 6);
+    const volumeRaw = 100 * Math.pow(f, 2.25);
     const color = Math.ceil(clamp(colorRaw, 0, 100));
     const volume = Math.ceil(clamp(volumeRaw, 0, 100));
     const points = color * volume;
@@ -240,17 +356,12 @@
     state.totalScore += s.points;
     state.results[state.round] = s;
     els.totalScore.textContent = fmt(state.totalScore);
-    els.resultEyebrow.textContent = `ROUND ${state.round + 1}`;
-    els.resultTitle.textContent = state.overflow ? 'OVERFLOW' : 'RESULT';
+    els.resultEyebrow.textContent = tr('roundEyebrow')(state.round + 1);
+    els.resultTitle.textContent = state.overflow ? tr('overflowTitle') : tr('result');
     els.colorScore.textContent = state.overflow ? '0' : s.color;
     els.volumeScore.textContent = state.overflow ? '0' : s.volume;
     els.roundScore.textContent = fmt(s.points);
-    if (state.overflow) els.resultNote.textContent = 'The cup overflowed. This round scores zero.';
-    else if (s.points >= 9000) els.resultNote.textContent = 'Almost perfect.';
-    else if (s.points >= 6500) els.resultNote.textContent = 'Great mix. Push the fill level a little further.';
-    else if (s.color < 55) els.resultNote.textContent = 'The color was the biggest miss.';
-    else if (s.volume < 55) els.resultNote.textContent = 'Good color. A fuller cup would score much higher.';
-    else els.resultNote.textContent = 'Good balance. Precision is everything.';
+    els.resultNote.textContent = tr(resultNoteKey(s));
     els.resultOverlay.classList.add('show'); els.resultOverlay.setAttribute('aria-hidden','false');
     if (!state.overflow && s.points > 0) playResult(s.points);
   }
@@ -274,7 +385,7 @@
     showScreen(els.finalScreen);
     els.finalScore.textContent = fmt(state.totalScore);
     els.roundBreakdown.innerHTML = state.results.map((r, i) => `<div><span>R${i+1}</span><b>${fmt(r.points)}</b></div>`).join('');
-    els.finalSoundBtn.textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
+    updateSoundLabels();
   }
 
   function ensureAudio() {
@@ -300,15 +411,17 @@
   function playResult(points) { const high = points > 8400; tone(high?523:392,.09,.032,'triangle'); tone(high?659:494,.11,.03,'triangle',.08); tone(high?784:587,.14,.025,'triangle',.16); }
 
   function updateWarning(fill) {
-    if (!soundOn || !audio || fill < .74 || !activePour) { stopWarning(); return; }
+    // A quiet continuous pitch meter: low from an empty vessel, rising smoothly
+    // all the way to full. This is especially important for the blind final round.
+    if (!soundOn || !audio || !activePour) { stopWarning(); return; }
     if (!warningOsc) {
       warningOsc = audio.createOscillator(); warningGain = audio.createGain();
-      warningOsc.type = 'sine'; warningGain.gain.value = .018;
+      warningOsc.type = 'sine'; warningGain.gain.value = .0001;
       warningOsc.connect(warningGain); warningGain.connect(audio.destination); warningOsc.start();
     }
-    const p = clamp((fill - .74) / .26, 0, 1);
-    warningOsc.frequency.setTargetAtTime(330 + Math.pow(p,1.7)*1250, audio.currentTime, .02);
-    warningGain.gain.setTargetAtTime(.012 + p*.018, audio.currentTime, .02);
+    const p = clamp(fill, 0, 1);
+    warningOsc.frequency.setTargetAtTime(145 + Math.pow(p, 1.35) * 1325, audio.currentTime, .025);
+    warningGain.gain.setTargetAtTime(.008 + p * .010, audio.currentTime, .03);
   }
 
   function stopWarning() {
@@ -337,7 +450,7 @@
   function toggleSound() {
     soundOn = !soundOn;
     els.soundBtn.textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
-    els.finalSoundBtn.textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
+    updateSoundLabels();
     els.soundBtn.setAttribute('aria-pressed', String(soundOn));
     if (soundOn) { ensureAudio(); if (els.gameScreen.classList.contains('active')) startMusic(); }
     else { stopWarning(); stopMusic(); }
@@ -360,9 +473,12 @@
   els.nextBtn.addEventListener('click', nextRound);
   els.titleBtn.addEventListener('click', goTitle); els.finalTitleBtn.addEventListener('click', goTitle);
   els.soundBtn.addEventListener('click', toggleSound); els.finalSoundBtn.addEventListener('click', toggleSound);
+  [els.titleLangBtn, els.langBtn, els.finalLangBtn].forEach(btn => btn && btn.addEventListener('click', toggleLanguage));
 
   // Stop a held pour if the pointer is released outside the button or the tab loses focus.
   window.addEventListener('pointerup', () => { if (activePour) stopPour(); });
   window.addEventListener('blur', () => { if (activePour) stopPour(); });
   window.addEventListener('resize', () => requestAnimationFrame(updateStreamGeometry));
+
+  applyLanguage();
 })();

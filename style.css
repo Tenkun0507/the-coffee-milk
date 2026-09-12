@@ -225,3 +225,19 @@ html,body,.app{height:100%;height:100dvh;min-height:0}
   will-change:transform,background-color;
   contain:strict;
 }
+
+
+/* ===== 2026-09-13 tuning pass ===== */
+/* Cocktail liquid stays safely inside the white/gray bowl outline and never reaches the stem. */
+.vessel-canvas.cocktail .liquid-mask{
+  left:18.3%!important;right:18.3%!important;top:20.4%!important;height:28.4%!important;bottom:auto!important;
+  border-radius:0!important;clip-path:polygon(0 0,100% 0,50% 100%)!important;
+}
+
+/* Language switch */
+.title-controls{position:absolute;right:18px;top:15px;z-index:80}
+.lang-btn{min-width:64px}
+@media (max-width:600px){
+  .title-controls{right:8px;top:8px}
+  .lang-btn{min-width:52px}
+}
