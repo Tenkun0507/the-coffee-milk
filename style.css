@@ -322,3 +322,41 @@ html,body,.app{height:100%;height:100dvh;min-height:0}
 }
 /* No visual MAX guide. The cocktail mask itself ends exactly at the former MAX height. */
 .cocktail-max-guide{display:none!important}
+
+
+/* ===== 2026-09-13 r6: fixed logical vessel stage =====
+   Vessel art + liquid use one immutable 420x560 coordinate system.
+   The entire stage is scaled together, preventing fullscreen-exit drift. */
+.vessel-area{
+  position:relative!important;
+  overflow:visible!important;
+}
+.vessel-canvas{
+  --vessel-scale:1;
+  --vessel-slide:0px;
+  position:absolute!important;
+  left:50%!important;
+  bottom:0!important;
+  width:420px!important;
+  height:560px!important;
+  max-width:none!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  flex:none!important;
+  transform-origin:50% 100%!important;
+  transform:translateX(-50%) translateX(var(--vessel-slide)) scale(var(--vessel-scale))!important;
+  transition:transform .45s cubic-bezier(.2,.85,.25,1.18),opacity .28s!important;
+}
+.vessel-canvas.enter{--vessel-slide:110vw;opacity:0!important}
+.vessel-canvas.exit{--vessel-slide:-110vw;opacity:0!important}
+.vessel-canvas .vessel-art{
+  width:420px!important;
+  height:560px!important;
+}
+/* Former cocktail MAX position is the hard top edge of the liquid drawing region.
+   No liquid pixels can exist above this ceiling. */
+.vessel-canvas.cocktail .liquid-mask{
+  top:105.56px!important; /* 560 * 0.1885 */
+  height:168.28px!important; /* 560 * 0.3005 */
+}
+.cocktail-max-guide{display:none!important}

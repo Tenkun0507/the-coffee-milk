@@ -50,6 +50,10 @@
   const assetPromises = new Map();
   let fitRaf = 0;
   const ASSET_ASPECT = 1536 / 2048; // 3:4
+  // Fixed logical vessel stage. The art and liquid mask always share this exact
+  // coordinate system; only the whole stage is scaled to fit the viewport.
+  const VESSEL_BASE_W = 420;
+  const VESSEL_BASE_H = 560;
 
   // Normalized liquid interiors measured against the fixed 1536x2048 asset canvas.
   // JS converts these to pixels after every resize/fullscreen change so masks cannot drift.
@@ -233,10 +237,11 @@
     }
     const b = LIQUID_BOUNDS[r.key];
     if (!b) return;
-    const w = els.vesselCanvas.clientWidth;
-    const h = els.vesselCanvas.clientHeight;
-    if (!w || !h) return;
 
+    // IMPORTANT: never derive the mask from the currently rendered/scaled size.
+    // It lives in the same fixed 420x560 logical coordinate system as the vessel art.
+    const w = VESSEL_BASE_W;
+    const h = VESSEL_BASE_H;
     const left = w * b.left;
     const top = h * b.top;
     const width = w * (1 - b.left - b.right);
@@ -261,20 +266,15 @@
     const area = els.vesselArea.getBoundingClientRect();
     if (!area.width || !area.height) return;
 
-    // Rebuild the exact 3:4 asset box from the CURRENT measured area.
-    // Pixel mask geometry is then recalculated from this exact box.
-    const pad = 2;
-    const maxW = Math.max(1, area.width - pad * 2);
-    const maxH = Math.max(1, area.height - pad * 2);
-    let h = maxH;
-    let w = h * ASSET_ASPECT;
-    if (w > maxW) {
-      w = maxW;
-      h = w / ASSET_ASPECT;
-    }
-
-    els.vesselCanvas.style.width = `${Math.round(w)}px`;
-    els.vesselCanvas.style.height = `${Math.round(h)}px`;
+    // Keep ONE immutable logical stage and scale the complete stage as a unit.
+    // Fullscreen/windowed/mobile therefore cannot desynchronise art and liquid.
+    const pad = 4;
+    const sx = Math.max(.05, (area.width - pad * 2) / VESSEL_BASE_W);
+    const sy = Math.max(.05, (area.height - pad * 2) / VESSEL_BASE_H);
+    const scale = Math.min(sx, sy);
+    els.vesselCanvas.style.width = `${VESSEL_BASE_W}px`;
+    els.vesselCanvas.style.height = `${VESSEL_BASE_H}px`;
+    els.vesselCanvas.style.setProperty('--vessel-scale', String(scale));
     applyLiquidMaskGeometry();
   }
 
