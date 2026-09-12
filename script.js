@@ -58,21 +58,23 @@
   // Normalized liquid interiors measured against the fixed 1536x2048 asset canvas.
   // JS converts these to pixels after every resize/fullscreen change so masks cannot drift.
   const LIQUID_BOUNDS = {
-    // Tuned from the actual raster assets and user screenshots.
-    // Beaker/test are nudged so the liquid sits more naturally inside the vessel.
-    beaker:   { left:.1770, right:.1795, top:.1815, bottom:.1450, radius:'0 0 4% 4%' },
+    // Final tuning pass from the latest screenshots.
+    // The beaker needed a slightly taller interior so "looks full" and
+    // overflow judgement feel aligned. Cocktail is nudged upward a touch so
+    // the visible fill meets the rim exactly at 100%.
+    beaker:   { left:.1785, right:.1805, top:.1730, bottom:.1360, radius:'0 0 4% 4%' },
     straight: { left:.2640, right:.2640, top:.4520, bottom:.2020, radius:'0 0 2% 2%' },
     test:     { left:.4730, right:.4715, top:.2015, bottom:.1360, radius:'0 0 999px 999px' },
     // Bowl only: the liquid can fill the triangle, never the stem/base, and never above the rim.
-    cocktail: { left:.1510, right:.1465, top:.1785, height:.3195, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
+    cocktail: { left:.1495, right:.1455, top:.1745, height:.3230, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
   };
 
   // Slight leniency so a vessel that looks full does not instantly count as overflow.
   const OVERFLOW_LIMITS = {
-    beaker: 1.045,
+    beaker: 1.058,
     straight: 1.035,
     test: 1.05,
-    cocktail: 1.006,
+    cocktail: 1.008,
     opaque: 1.04
   };
 
