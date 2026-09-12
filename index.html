@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="theme-color" content="#76cbd2" />
   <title>THE COFFEE MILK</title>
-  <link rel="stylesheet" href="style.css?v=20260912a" />
+  <link rel="stylesheet" href="style.css?v=20260912b" />
 </head>
 <body>
   <div id="app" class="app">
@@ -68,7 +68,12 @@
 
       <main class="playfield">
         <button id="coffeeBtn" class="pour-btn coffee-btn" data-liquid="coffee">
-          <span class="pour-icon coffee-icon"><i></i></span>
+          <span class="pour-icon coffee-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <path d="M47.8 8.8C35.4 2.9 18.6 9.2 11.2 22.4 3.7 35.8 8.2 50.5 21.4 56.1 34.7 61.8 50.8 54.3 56 40.4c4.9-13.1 3.8-25.9-8.2-31.6Z"/>
+              <path class="bean-cut" d="M44.2 11.8c-1.9 9.7-7.9 13.7-13.8 17.7-6.7 4.5-13.2 8.9-14.3 21.8"/>
+            </svg>
+          </span>
           <strong>COFFEE</strong>
           <small>1 USE</small>
         </button>
@@ -84,7 +89,13 @@
         </div>
 
         <button id="milkBtn" class="pour-btn milk-btn" data-liquid="milk">
-          <span class="pour-icon milk-icon"><i></i></span>
+          <span class="pour-icon milk-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <path d="M18 7h25l7 10v40H14V17l4-10Z"/>
+              <path class="milk-fold" d="M18 7l10 10h22M28 17v40M43 7l-7 10"/>
+              <path class="milk-drop" d="M39 31c0 5-7 9-7 14a7 7 0 0 0 14 0c0-5-7-9-7-14Z"/>
+            </svg>
+          </span>
           <strong>MILK</strong>
           <small>1 USE</small>
         </button>
@@ -122,6 +133,6 @@
     </section>
   </div>
 
-  <script src="script.js?v=20260912a"></script>
+  <script src="script.js?v=20260912b"></script>
 </body>
 </html>

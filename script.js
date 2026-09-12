@@ -79,6 +79,24 @@
     els.liquid.style.height = `${visualFillRatio() * 100}%`;
   }
 
+  function updateStreamGeometry() {
+    if (!state) return;
+    const area = els.vesselArea.getBoundingClientRect();
+    const canvas = els.vesselCanvas.getBoundingClientRect();
+    if (!area.width || !canvas.height) return;
+    const r = currentRound();
+    let targetY;
+    if (!r.blind) {
+      const mask = els.liquidMask.getBoundingClientRect();
+      targetY = mask.height ? (mask.top - area.top + 8) : (canvas.top - area.top + canvas.height * .2);
+    } else {
+      targetY = canvas.top - area.top + canvas.height * .205;
+    }
+    const startY = Math.max(0, canvas.top - area.top - Math.min(42, canvas.height * .08));
+    els.pourStream.style.top = `${startY}px`;
+    els.pourStream.style.height = `${Math.max(18, targetY - startY)}px`;
+  }
+
   function prepareRound(initial = false) {
     stopPour();
     const r = currentRound();
@@ -95,6 +113,7 @@
     els.liquidMask.style.visibility = r.blind ? 'hidden' : 'visible';
     els.resultOverlay.classList.remove('show'); els.resultOverlay.setAttribute('aria-hidden','true');
     els.nextBtn.textContent = state.round === ROUNDS.length - 1 ? 'FINAL RESULT' : 'NEXT ROUND';
+    requestAnimationFrame(updateStreamGeometry);
 
     if (!initial) {
       els.vesselCanvas.classList.add('enter');
@@ -125,6 +144,7 @@
     try { btn.setPointerCapture(pointerId); } catch (_) {}
     activePour = type;
     els.pourStream.className = `pour-stream active ${type}`;
+    updateStreamGeometry();
     lastTime = performance.now();
     raf = requestAnimationFrame(tickPour);
     playClick(type);
@@ -175,8 +195,8 @@
     // Nonlinear volume curve: the last few percent are worth a lot.
     const f = clamp(fillRatio(), 0, 1);
     const volume = 100 * Math.pow(f, 6);
-    // Maximum 5,000 per round / 25,000 total.
-    const points = Math.round((color * volume) / 2);
+    // COLOR 100 × VOLUME 100 = 10,000 points maximum per round.
+    const points = Math.round(color * volume);
     return { color, volume, points, actual, fill:f };
   }
 
@@ -193,8 +213,8 @@
     els.volumeScore.textContent = state.overflow ? '0' : Math.round(s.volume);
     els.roundScore.textContent = fmt(s.points);
     if (state.overflow) els.resultNote.textContent = 'The cup overflowed. This round scores zero.';
-    else if (s.points >= 4500) els.resultNote.textContent = 'Almost perfect.';
-    else if (s.points >= 3200) els.resultNote.textContent = 'Great mix. Push the fill level a little further.';
+    else if (s.points >= 9000) els.resultNote.textContent = 'Almost perfect.';
+    else if (s.points >= 6500) els.resultNote.textContent = 'Great mix. Push the fill level a little further.';
     else if (s.color < 55) els.resultNote.textContent = 'The color was the biggest miss.';
     else if (s.volume < 55) els.resultNote.textContent = 'Good color. A fuller cup would score much higher.';
     else els.resultNote.textContent = 'Good balance. Precision is everything.';
@@ -240,7 +260,7 @@
 
   function playClick(type) { tone(type === 'coffee' ? 180 : 250, .055, .018, 'triangle'); }
   function playOverflow() { tone(170,.16,.05,'sawtooth'); tone(105,.23,.045,'sawtooth',.09); }
-  function playResult(points) { const high = points > 4200; tone(high?523:392,.09,.032,'triangle'); tone(high?659:494,.11,.03,'triangle',.08); tone(high?784:587,.14,.025,'triangle',.16); }
+  function playResult(points) { const high = points > 8400; tone(high?523:392,.09,.032,'triangle'); tone(high?659:494,.11,.03,'triangle',.08); tone(high?784:587,.14,.025,'triangle',.16); }
 
   function updateWarning(fill) {
     if (!soundOn || !audio || fill < .74 || !activePour) { stopWarning(); return; }
@@ -307,4 +327,5 @@
   // Stop a held pour if the pointer is released outside the button or the tab loses focus.
   window.addEventListener('pointerup', () => { if (activePour) stopPour(); });
   window.addEventListener('blur', () => { if (activePour) stopPour(); });
+  window.addEventListener('resize', () => requestAnimationFrame(updateStreamGeometry));
 })();
