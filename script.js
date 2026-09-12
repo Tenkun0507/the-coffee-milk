@@ -60,9 +60,9 @@
   const LIQUID_BOUNDS = {
     // Tuned from the actual raster assets and user screenshots.
     // Beaker/test are nudged so the liquid sits more naturally inside the vessel.
-    beaker:   { left:.1730, right:.1790, top:.1980, bottom:.1320, radius:'0 0 4% 4%' },
+    beaker:   { left:.1770, right:.1795, top:.1815, bottom:.1450, radius:'0 0 4% 4%' },
     straight: { left:.2640, right:.2640, top:.4520, bottom:.2020, radius:'0 0 2% 2%' },
-    test:     { left:.4723, right:.4725, top:.1980, bottom:.1230, radius:'0 0 999px 999px' },
+    test:     { left:.4730, right:.4715, top:.2015, bottom:.1360, radius:'0 0 999px 999px' },
     // Bowl only: the liquid can fill the triangle, never the stem/base, and never above the rim.
     cocktail: { left:.1550, right:.1550, top:.1830, height:.3250, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
   };
@@ -259,18 +259,19 @@
     const width = w * (1 - b.left - b.right);
     const height = b.height != null ? h * b.height : h * (1 - b.top - b.bottom);
 
-    Object.assign(els.liquidMask.style, {
-      display:'block',
-      left:`${left}px`,
-      top:`${top}px`,
-      width:`${Math.max(1, width)}px`,
-      height:`${Math.max(1, height)}px`,
-      right:'auto',
-      bottom:'auto',
-      borderRadius:b.radius || '0',
-      clipPath:b.clip || 'none',
-      WebkitClipPath:b.clip || 'none'
-    });
+    // Use inline !important because older tuning CSS contains !important geometry.
+    // This makes this single source of truth win reliably on every viewport.
+    const st = els.liquidMask.style;
+    st.setProperty('display', 'block', 'important');
+    st.setProperty('left', `${left}px`, 'important');
+    st.setProperty('top', `${top}px`, 'important');
+    st.setProperty('width', `${Math.max(1, width)}px`, 'important');
+    st.setProperty('height', `${Math.max(1, height)}px`, 'important');
+    st.setProperty('right', 'auto', 'important');
+    st.setProperty('bottom', 'auto', 'important');
+    st.setProperty('border-radius', b.radius || '0', 'important');
+    st.setProperty('clip-path', b.clip || 'none', 'important');
+    st.setProperty('-webkit-clip-path', b.clip || 'none', 'important');
   }
 
   function fitVesselCanvas() {

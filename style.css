@@ -360,3 +360,12 @@ html,body,.app{height:100%;height:100dvh;min-height:0}
   height:168.28px!important; /* 560 * 0.3005 */
 }
 .cocktail-max-guide{display:none!important}
+
+
+/* ===== r9: JS is the single source of truth for liquid geometry ===== */
+.vessel-canvas.beaker .liquid-mask,
+.vessel-canvas.straight .liquid-mask,
+.vessel-canvas.test .liquid-mask,
+.vessel-canvas.cocktail .liquid-mask{
+  /* geometry is injected as inline !important by script.js */
+}
