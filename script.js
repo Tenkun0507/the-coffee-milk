@@ -41,10 +41,28 @@
   let warningGain = null;
   let musicTimer = 0;
   let musicStep = 0;
+  let lastPaint = 0;
+  const PAINT_INTERVAL = 1000 / 36;
+  const assetPromises = new Map();
 
   function freshState() {
     return { round:0, totalScore:0, results:[], target:50, coffee:0, milk:0, overflow:false, used:{coffee:false,milk:false}, locked:false, roundFinished:false };
   }
+
+  function preloadAsset(url) {
+    if (assetPromises.has(url)) return assetPromises.get(url);
+    const promise = new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = url;
+      if (img.complete) resolve();
+    });
+    assetPromises.set(url, promise);
+    return promise;
+  }
+
+  ROUNDS.forEach(r => preloadAsset(r.asset));
 
   function showScreen(which) {
     [els.titleScreen, els.gameScreen, els.finalScreen].forEach(x => x.classList.remove('active'));
@@ -76,7 +94,7 @@
     const total = totalMl();
     const ratio = total > 0 ? (state.coffee / total) * 100 : 50;
     els.liquid.style.backgroundColor = mixColor(ratio);
-    els.liquid.style.height = `${visualFillRatio() * 100}%`;
+    els.liquid.style.transform = `scaleY(${visualFillRatio()}) translateZ(0)`;
   }
 
   function updateStreamGeometry() {
@@ -97,26 +115,33 @@
     els.pourStream.style.height = `${Math.max(18, targetY - startY)}px`;
   }
 
-  function prepareRound(initial = false) {
+  async function prepareRound(initial = false) {
     stopPour();
     const r = currentRound();
     state.coffee = 0; state.milk = 0; state.overflow = false; state.locked = false; state.roundFinished = false;
     state.used = { coffee:false, milk:false };
+    lastPaint = 0;
     setTarget();
     els.roundLabel.textContent = `ROUND ${state.round + 1} / ${ROUNDS.length}`;
     els.totalScore.textContent = fmt(state.totalScore);
     els.coffeeBtn.classList.remove('used','pouring'); els.milkBtn.classList.remove('used','pouring');
     els.coffeeBtn.disabled = false; els.milkBtn.disabled = false;
-    els.vesselCanvas.className = `vessel-canvas ${r.key}`;
+
+    if (!initial) els.vesselArt.classList.add('asset-loading');
+    els.vesselCanvas.className = `vessel-canvas ${r.key}${initial ? '' : ' enter'}`;
     els.vesselArt.src = r.asset;
-    els.liquid.style.height = '0%';
+    els.liquid.style.transform = 'scaleY(0) translateZ(0)';
+    els.liquid.style.backgroundColor = mixColor(50);
     els.liquidMask.style.visibility = r.blind ? 'hidden' : 'visible';
     els.resultOverlay.classList.remove('show'); els.resultOverlay.setAttribute('aria-hidden','true');
     els.nextBtn.textContent = state.round === ROUNDS.length - 1 ? 'FINAL RESULT' : 'NEXT ROUND';
+
+    await preloadAsset(r.asset);
+    try { if (els.vesselArt.decode) await els.vesselArt.decode(); } catch (_) {}
+    els.vesselArt.classList.remove('asset-loading');
     requestAnimationFrame(updateStreamGeometry);
 
     if (!initial) {
-      els.vesselCanvas.classList.add('enter');
       requestAnimationFrame(() => requestAnimationFrame(() => els.vesselCanvas.classList.remove('enter')));
     }
   }
@@ -126,7 +151,7 @@
     ensureAudio();
     startMusic();
     showScreen(els.gameScreen);
-    prepareRound(true);
+    void prepareRound(true);
   }
 
   function goTitle() {
@@ -154,12 +179,19 @@
     if (!activePour || state.locked) return;
     const dt = Math.min(.05, Math.max(0, (now - lastTime) / 1000));
     lastTime = now;
-    const add = FLOW_ML_PER_SECOND * dt;
-    state[activePour] += add;
-    updateLiquid();
+    state[activePour] += FLOW_ML_PER_SECOND * dt;
     const f = fillRatio();
-    updateWarning(f);
+
+    // Physics still runs every animation frame, but DOM/audio updates are throttled.
+    // This keeps the held-pour input precise while avoiding mobile jank.
+    if (!lastPaint || now - lastPaint >= PAINT_INTERVAL) {
+      lastPaint = now;
+      updateLiquid();
+      updateWarning(f);
+    }
+
     if (f > 1.0005) {
+      updateLiquid();
       state.overflow = true;
       state.locked = true;
       stopPour();
@@ -171,6 +203,7 @@
   }
 
   function stopPour() {
+    if (state && activePour) updateLiquid();
     if (raf) cancelAnimationFrame(raf);
     raf = 0;
     if (activePour) {
@@ -190,14 +223,14 @@
     if (state.overflow) return { color:0, volume:0, points:0, actual:coffeePercent(), fill:fillRatio() };
     const actual = coffeePercent();
     const error = Math.abs(actual - state.target) / 100;
-    // Strong nonlinear color accuracy curve: small misses are forgiven, large misses collapse quickly.
-    const color = totalMl() <= 0 ? 0 : 100 * Math.exp(-34 * error * error);
-    // Nonlinear volume curve: the last few percent are worth a lot.
+    // Strong nonlinear curves, then each component is rounded UP before multiplication.
+    const colorRaw = totalMl() <= 0 ? 0 : 100 * Math.exp(-34 * error * error);
     const f = clamp(fillRatio(), 0, 1);
-    const volume = 100 * Math.pow(f, 6);
-    // COLOR 100 × VOLUME 100 = 10,000 points maximum per round.
-    const points = Math.round(color * volume);
-    return { color, volume, points, actual, fill:f };
+    const volumeRaw = 100 * Math.pow(f, 6);
+    const color = Math.ceil(clamp(colorRaw, 0, 100));
+    const volume = Math.ceil(clamp(volumeRaw, 0, 100));
+    const points = color * volume;
+    return { color, volume, points, actual, fill:f, colorRaw, volumeRaw };
   }
 
   function finishRound() {
@@ -209,8 +242,8 @@
     els.totalScore.textContent = fmt(state.totalScore);
     els.resultEyebrow.textContent = `ROUND ${state.round + 1}`;
     els.resultTitle.textContent = state.overflow ? 'OVERFLOW' : 'RESULT';
-    els.colorScore.textContent = state.overflow ? '0' : Math.round(s.color);
-    els.volumeScore.textContent = state.overflow ? '0' : Math.round(s.volume);
+    els.colorScore.textContent = state.overflow ? '0' : s.color;
+    els.volumeScore.textContent = state.overflow ? '0' : s.volume;
     els.roundScore.textContent = fmt(s.points);
     if (state.overflow) els.resultNote.textContent = 'The cup overflowed. This round scores zero.';
     else if (s.points >= 9000) els.resultNote.textContent = 'Almost perfect.';
@@ -225,10 +258,14 @@
   function nextRound() {
     els.resultOverlay.classList.remove('show');
     if (state.round >= ROUNDS.length - 1) { showFinal(); return; }
+
+    const nextIndex = state.round + 1;
+    // Make sure the NEXT vessel is already decoded before its slide-in starts.
+    void preloadAsset(ROUNDS[nextIndex].asset);
     els.vesselCanvas.classList.add('exit');
-    setTimeout(() => {
-      state.round++;
-      prepareRound(false);
+    setTimeout(async () => {
+      state.round = nextIndex;
+      await prepareRound(false);
     }, 300);
   }
 

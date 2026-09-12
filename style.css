@@ -170,3 +170,58 @@ html,body,.app{height:100%;height:100dvh;min-height:0}
   .primary-btn{padding:11px 25px;font-size:14px}
   .final-card h2{font-size:29px;margin:4px 0 10px}.final-score{font-size:57px;margin-bottom:11px}.round-breakdown{margin-bottom:13px}
 }
+
+
+/* ===== Polish pass: emoji rules, lighter pouring, corrected liquid masks ===== */
+.rule-emoji{
+  height:58px;display:grid;place-items:center;font-size:42px;line-height:1;
+  margin:0 auto 3px;filter:drop-shadow(0 2px 0 rgba(83,61,47,.12));
+}
+
+/* Liquid is clipped strictly to the clear interior, never the glass outline/spout/bottom. */
+.vessel-canvas.beaker .liquid-mask{
+  left:15.7%;right:16.4%;top:19.2%;bottom:15.3%;
+  border-radius:0 0 5% 5%;clip-path:none;
+}
+.vessel-canvas.test .liquid-mask{
+  left:46.6%;right:46.5%;top:20.8%;bottom:15.0%;
+  border-radius:0 0 999px 999px;clip-path:none;
+}
+.liquid-mask{contain:paint;transform:translateZ(0)}
+.liquid{transition:none;transform:translateZ(0)}
+.vessel-art{transform:translateZ(0);backface-visibility:hidden}
+
+/* Prevent the asset swap itself from flashing the previous round during slide-in. */
+.vessel-art.asset-loading{visibility:hidden}
+
+@media (max-width:600px) and (orientation:portrait){
+  .rule-emoji{height:36px;font-size:29px;margin:-2px auto 0}
+}
+
+/* ===== 2026-09-12 performance + clipping pass ===== */
+.rule-card .rule-emoji{
+  font-size:42px!important;
+  color:initial!important;
+  font-weight:400!important;
+}
+.rule-card > span:not(.rule-emoji){font-size:12px;line-height:1.25;color:#756456;font-weight:700}
+
+/* Conservative inner masks: only the visibly clear interior can contain liquid. */
+.vessel-canvas.beaker .liquid-mask{
+  left:16.8%;right:17.6%;top:20.0%;bottom:16.4%;
+  border-radius:0 0 4% 4%;clip-path:none;
+}
+.vessel-canvas.test .liquid-mask{
+  left:47.15%;right:47.05%;top:21.9%;bottom:16.6%;
+  border-radius:0 0 999px 999px;clip-path:none;
+}
+
+/* Transform-only fill animation avoids repeated layout/reflow while holding a pour. */
+.liquid{
+  height:100%!important;
+  bottom:0;
+  transform-origin:50% 100%;
+  transform:scaleY(0) translateZ(0);
+  will-change:transform,background-color;
+  contain:strict;
+}
