@@ -58,13 +58,22 @@
   // Normalized liquid interiors measured against the fixed 1536x2048 asset canvas.
   // JS converts these to pixels after every resize/fullscreen change so masks cannot drift.
   const LIQUID_BOUNDS = {
-    // Tuned from the actual raster assets so the liquid stays inside the clear interior
-    // even after resize/fullscreen changes.
-    beaker:   { left:.1760, right:.1800, top:.2090, bottom:.1345, radius:'0 0 4% 4%' },
+    // Tuned from the actual raster assets and user screenshots.
+    // Beaker/test are nudged so the liquid sits more naturally inside the vessel.
+    beaker:   { left:.1730, right:.1790, top:.1980, bottom:.1320, radius:'0 0 4% 4%' },
     straight: { left:.2640, right:.2640, top:.4520, bottom:.2020, radius:'0 0 2% 2%' },
-    test:     { left:.4727, right:.4720, top:.2050, bottom:.1290, radius:'0 0 999px 999px' },
+    test:     { left:.4723, right:.4725, top:.1980, bottom:.1230, radius:'0 0 999px 999px' },
     // Bowl only: the liquid can fill the triangle, never the stem/base, and never above the rim.
     cocktail: { left:.1550, right:.1550, top:.1830, height:.3250, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
+  };
+
+  // Slight leniency so a vessel that looks full does not instantly count as overflow.
+  const OVERFLOW_LIMITS = {
+    beaker: 1.045,
+    straight: 1.035,
+    test: 1.05,
+    cocktail: 1.03,
+    opaque: 1.04
   };
 
 
@@ -216,6 +225,7 @@
   function currentRound() { return ROUNDS[state.round]; }
   function totalMl() { return state.coffee + state.milk; }
   function fillRatio() { return totalMl() / currentRound().capacity; }
+  function overflowLimit() { return OVERFLOW_LIMITS[currentRound().key] || 1.035; }
   function coffeePercent() { const t = totalMl(); return t <= 0 ? 0 : (state.coffee / t) * 100; }
 
   function visualFillRatio() {
@@ -395,7 +405,7 @@
       updateWarning(f);
     }
 
-    if (f > 1.0005) {
+    if (f > overflowLimit()) {
       updateLiquid();
       state.overflow = true;
       state.locked = true;
