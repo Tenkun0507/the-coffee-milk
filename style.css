@@ -369,3 +369,16 @@ html,body,.app{height:100%;height:100dvh;min-height:0}
 .vessel-canvas.cocktail .liquid-mask{
   /* geometry is injected as inline !important by script.js */
 }
+
+
+/* ===== r10: cocktail visual-full = scoring-full ===== */
+.vessel-canvas.cocktail .liquid-mask{
+  left:15.10%!important;
+  right:14.65%!important;
+  top:99.96px!important;
+  height:178.92px!important;
+  bottom:auto!important;
+  border-radius:0!important;
+  clip-path:polygon(0 0,100% 0,50% 100%)!important;
+  -webkit-clip-path:polygon(0 0,100% 0,50% 100%)!important;
+}

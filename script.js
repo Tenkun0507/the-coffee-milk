@@ -64,7 +64,7 @@
     straight: { left:.2640, right:.2640, top:.4520, bottom:.2020, radius:'0 0 2% 2%' },
     test:     { left:.4730, right:.4715, top:.2015, bottom:.1360, radius:'0 0 999px 999px' },
     // Bowl only: the liquid can fill the triangle, never the stem/base, and never above the rim.
-    cocktail: { left:.1550, right:.1550, top:.1830, height:.3250, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
+    cocktail: { left:.1510, right:.1465, top:.1785, height:.3195, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
   };
 
   // Slight leniency so a vessel that looks full does not instantly count as overflow.
@@ -72,7 +72,7 @@
     beaker: 1.045,
     straight: 1.035,
     test: 1.05,
-    cocktail: 1.03,
+    cocktail: 1.006,
     opaque: 1.04
   };
 
