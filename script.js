@@ -58,11 +58,13 @@
   // Normalized liquid interiors measured against the fixed 1536x2048 asset canvas.
   // JS converts these to pixels after every resize/fullscreen change so masks cannot drift.
   const LIQUID_BOUNDS = {
-    beaker:   { left:.1715, right:.1805, top:.2035, bottom:.1685, radius:'0 0 4% 4%' },
+    // Tuned from the actual raster assets so the liquid stays inside the clear interior
+    // even after resize/fullscreen changes.
+    beaker:   { left:.1760, right:.1800, top:.2090, bottom:.1345, radius:'0 0 4% 4%' },
     straight: { left:.2640, right:.2640, top:.4520, bottom:.2020, radius:'0 0 2% 2%' },
-    test:     { left:.4735, right:.4728, top:.2225, bottom:.1715, radius:'0 0 999px 999px' },
-    // Top is the old MAX level. Nothing can ever render above this ceiling.
-    cocktail: { left:.1865, right:.1865, top:.1885, height:.3005, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
+    test:     { left:.4727, right:.4720, top:.2050, bottom:.1290, radius:'0 0 999px 999px' },
+    // Bowl only: the liquid can fill the triangle, never the stem/base, and never above the rim.
+    cocktail: { left:.1550, right:.1550, top:.1830, height:.3250, clip:'polygon(0 0,100% 0,50% 100%)', radius:'0' }
   };
 
 
