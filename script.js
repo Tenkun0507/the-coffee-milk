@@ -17,7 +17,7 @@
     coffeeBtn: $('#coffeeBtn'), milkBtn: $('#milkBtn'), vesselArea: $('#vesselArea'), vesselCanvas: $('#vesselCanvas'),
     vesselArt: $('#vesselArt'), liquidMask: $('#liquidMask'), liquid: $('#liquid'), pourStream: $('#pourStream'),
     resultOverlay: $('#resultOverlay'), resultEyebrow: $('#resultEyebrow'), resultTitle: $('#resultTitle'),
-    colorScore: $('#colorScore'), volumeScore: $('#volumeScore'), roundScore: $('#roundScore'), resultNote: $('#resultNote'), nextBtn: $('#nextBtn'),
+    colorScore: $('#colorScore'), volumeScore: $('#volumeScore'), roundScore: $('#roundScore'), resultNote: $('#resultNote'), colorDebug: $('#colorDebug'), nextBtn: $('#nextBtn'),
     finalScore: $('#finalScore'), roundBreakdown: $('#roundBreakdown'), againBtn: $('#againBtn')
   };
 
@@ -29,11 +29,11 @@
     { key:'straight', name:'STRAIGHT GLASS', asset:'assets/straight_glass_game.svg', capacity:88, geometry:'linear', blind:false },
     { key:'test', name:'TEST TUBE', asset:'assets/test_tube_game.svg', capacity:40, geometry:'linear', blind:false },
     { key:'cocktail', name:'COCKTAIL GLASS', asset:'assets/cocktail_glass_game.svg', capacity:118, geometry:'cone', blind:false },
-    { key:'opaque', name:'BLIND GLASS', asset:'assets/opaque_glass_game.svg', capacity:90, geometry:'linear', blind:true }
+    { key:'opaque', name:'BLIND GLASS', asset:'assets/opaque_glass_colored.svg', capacity:90, geometry:'linear', blind:true }
   ];
 
-  const COFFEE_RGB = [70, 38, 25];
-  const MILK_RGB = [246, 233, 199];
+  const COFFEE_RGB = [8, 5, 3];
+  const MILK_RGB = [255, 255, 255];
 
   let state = null;
   let raf = 0;
@@ -97,11 +97,12 @@
       roundLabel:(n,total)=>`ROUND ${n} / ${total}`,
       roundEyebrow:n=>`ROUND ${n}`,
       noteOverflow:'The cup overflowed. This round scores zero.',
-      notePerfect:'Almost perfect.',
-      noteGreat:'Great mix. Push the fill level a little further.',
-      noteColorMiss:'The color was the biggest miss.',
-      noteVolumeMiss:'Good color. A fuller cup would score much higher.',
-      noteBalance:'Good balance. Precision is everything.'
+      notePerfect:'Excellent. Both color and volume were nearly perfect.',
+      noteHigh:'Excellent precision on both color and volume.',
+      noteColorMiss:'Volume was solid. Color matching is the main place to improve.',
+      noteVolumeMiss:'Color was solid. The main opportunity is filling closer to the limit.',
+      noteBothMiss:'Both color and volume still have room to improve.',
+      noteBalance:'A balanced result. A little more precision will raise the score.'
     },
     ja: {
       brandKicker:'完璧な一杯をつくれ',
@@ -120,11 +121,12 @@
       roundLabel:(n,total)=>`ラウンド ${n} / ${total}`,
       roundEyebrow:n=>`ラウンド ${n}`,
       noteOverflow:'あふれてしまったため、このラウンドは0点。',
-      notePerfect:'ほぼ完璧！',
-      noteGreat:'かなりいい感じ。あと少しだけ量を攻めよう。',
-      noteColorMiss:'今回は色のズレが一番大きかった。',
-      noteVolumeMiss:'色はいい感じ。もっと満杯に近づけると高得点！',
-      noteBalance:'いいバランス。最後は精度勝負！'
+      notePerfect:'かなり完璧！色も量もほぼ理想通り。',
+      noteHigh:'色も量もかなり高精度！',
+      noteColorMiss:'量は十分いい感じ。次は色合わせを詰めると伸びる！',
+      noteVolumeMiss:'色は十分いい感じ。次は満タンギリギリを狙うと伸びる！',
+      noteBothMiss:'色も量もまだ伸びしろあり。両方を少しずつ詰めよう。',
+      noteBalance:'バランスはいい感じ。あと少し精度を上げればかなり伸びる！'
     }
   };
 
@@ -132,11 +134,27 @@
 
   function resultNoteKey(s) {
     if (state && state.overflow) return 'noteOverflow';
-    if (s.points >= 9000) return 'notePerfect';
-    if (s.points >= 6500) return 'noteGreat';
-    if (s.color < 55) return 'noteColorMiss';
-    if (s.volume < 55) return 'noteVolumeMiss';
+    // Judge the two components directly rather than inferring from total score.
+    // This prevents comments like "improve volume" when volume is already 94.
+    if (s.color >= 98 && s.volume >= 98) return 'notePerfect';
+    if (s.color >= 90 && s.volume >= 90) return 'noteHigh';
+    if (s.color < 80 && s.volume < 80) return 'noteBothMiss';
+    if (s.color <= s.volume - 8 && s.color < 90) return 'noteColorMiss';
+    if (s.volume <= s.color - 8 && s.volume < 90) return 'noteVolumeMiss';
+    if (s.color < 82) return 'noteColorMiss';
+    if (s.volume < 82) return 'noteVolumeMiss';
     return 'noteBalance';
+  }
+
+  function colorDebugText(s) {
+    if (!s) return '';
+    const target = Number.isFinite(s.target) ? s.target : state.target;
+    const actual = Number.isFinite(s.actual) ? s.actual : 0;
+    const diff = Number.isFinite(s.colorDiff) ? s.colorDiff : Math.abs(actual - target);
+    if (currentLang === 'ja') {
+      return `色チェック：目標 ${target.toFixed(1)}% ／ 実際 ${actual.toFixed(1)}% ／ 差 ${diff.toFixed(1)}pt → ${s.color}点`;
+    }
+    return `Color check: target ${target.toFixed(1)}% / actual ${actual.toFixed(1)}% / diff ${diff.toFixed(1)}pt → ${s.color} pts`;
   }
 
   function updateSoundLabels() {
@@ -166,6 +184,7 @@
       els.resultEyebrow.textContent = tr('roundEyebrow')(state.round + 1);
       els.resultTitle.textContent = state.overflow ? tr('overflowTitle') : tr('result');
       els.resultNote.textContent = tr(resultNoteKey(s));
+      if (els.colorDebug) els.colorDebug.textContent = colorDebugText(s);
     }
     if (els.finalScreen.classList.contains('active')) {
       els.finalScore.textContent = fmt(state.totalScore);
@@ -350,6 +369,7 @@
     els.liquidMask.style.visibility = r.blind ? 'hidden' : 'visible';
     els.liquidMask.style.display = r.blind ? 'none' : 'block';
     els.resultOverlay.classList.remove('show'); els.resultOverlay.setAttribute('aria-hidden','true');
+    if (els.colorDebug) els.colorDebug.textContent = '';
     els.nextBtn.textContent = state.round === ROUNDS.length - 1 ? tr('finalResult') : tr('nextRound');
 
     await preloadAsset(r.asset);
@@ -438,19 +458,20 @@
   }
 
   function scoreRound() {
-    if (state.overflow) return { color:0, volume:0, points:0, actual:coffeePercent(), fill:fillRatio() };
-    const actual = coffeePercent();
-    const colorDiff = Math.abs(actual - state.target);
-    // Color is now linear: every 1 percentage-point miss costs exactly 1 point.
-    // Example: target 60%, actual 52% -> 92 points.
-    // Component scores are still rounded UP before multiplication.
-    const colorRaw = totalMl() <= 0 ? 0 : Math.max(0, 100 - colorDiff);
+    const target = clamp(Number(state.target) || 50, 10, 90);
+    const actual = clamp(Number(coffeePercent()) || 0, 0, 100);
+    const colorDiff = Math.abs(actual - target);
+    if (state.overflow) return { color:0, volume:0, points:0, actual, target, colorDiff, fill:fillRatio() };
+    // Linear color score: every 1 percentage-point miss costs exactly 1 point.
+    // Because targets are 10–90% and actual is clamped to 0–100%, a non-empty
+    // drink cannot produce an impossible out-of-range value.
+    const colorRaw = totalMl() <= 0 ? 0 : 100 - colorDiff;
     const f = clamp(fillRatio(), 0, 1);
     const volumeRaw = 100 * Math.pow(f, 2.25);
-    const color = Math.ceil(clamp(colorRaw, 0, 100));
+    const color = totalMl() <= 0 ? 0 : Math.ceil(clamp(colorRaw, 10, 100));
     const volume = Math.ceil(clamp(volumeRaw, 0, 100));
     const points = color * volume;
-    return { color, volume, points, actual, fill:f, colorRaw, volumeRaw };
+    return { color, volume, points, actual, target, colorDiff, fill:f, colorRaw, volumeRaw };
   }
 
   function finishRound() {
@@ -466,6 +487,7 @@
     els.volumeScore.textContent = state.overflow ? '0' : s.volume;
     els.roundScore.textContent = fmt(s.points);
     els.resultNote.textContent = tr(resultNoteKey(s));
+    if (els.colorDebug) els.colorDebug.textContent = colorDebugText(s);
     els.resultOverlay.classList.add('show'); els.resultOverlay.setAttribute('aria-hidden','false');
     if (!state.overflow && s.points > 0) playResult(s.points);
   }
@@ -520,12 +542,14 @@
     if (!soundOn || !audio || !activePour) { stopWarning(); return; }
     if (!warningOsc) {
       warningOsc = audio.createOscillator(); warningGain = audio.createGain();
-      warningOsc.type = 'sine'; warningGain.gain.value = .0001;
+      // Triangle carries more audible harmonics than a sine, especially on phone/laptop speakers.
+      warningOsc.type = 'triangle'; warningGain.gain.value = .040;
       warningOsc.connect(warningGain); warningGain.connect(audio.destination); warningOsc.start();
     }
     const p = clamp(fill, 0, 1);
-    warningOsc.frequency.setTargetAtTime(145 + Math.pow(p, 1.35) * 1325, audio.currentTime, .025);
-    warningGain.gain.setTargetAtTime(.008 + p * .010, audio.currentTime, .03);
+    warningOsc.frequency.setTargetAtTime(180 + Math.pow(p, 1.25) * 1320, audio.currentTime, .022);
+    // Make the empty/early-pour region clearly audible instead of fading in quietly.
+    warningGain.gain.setTargetAtTime(.052 + p * .026, audio.currentTime, .018);
   }
 
   function stopWarning() {
