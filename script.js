@@ -32,8 +32,11 @@
     { key:'opaque', name:'BLIND GLASS', asset:'assets/opaque_glass_colored.svg', capacity:90, geometry:'linear', blind:true }
   ];
 
-  const COFFEE_RGB = [8, 5, 3];
-  const MILK_RGB = [255, 255, 255];
+  // Visual palette: very dark roasted-brown coffee, warm milk, and a latte midpoint.
+  // The midpoint keeps the drink looking like coffee milk while making ratio changes easier to read.
+  const COFFEE_RGB = [37, 16, 9];
+  const LATTE_RGB = [178, 119, 79];
+  const MILK_RGB = [255, 248, 232];
 
   let state = null;
   let raf = 0;
@@ -234,7 +237,12 @@
 
   function mixColor(coffeePercent) {
     const t = clamp(coffeePercent / 100, 0, 1);
-    const v = MILK_RGB.map((m, i) => Math.round(m + (COFFEE_RGB[i] - m) * t));
+    // Two-stage interpolation keeps the middle range warm and "coffee-milk" looking
+    // instead of drifting toward a grayish brown, while remaining monotonic with ratio.
+    const from = t <= .5 ? MILK_RGB : LATTE_RGB;
+    const to = t <= .5 ? LATTE_RGB : COFFEE_RGB;
+    const local = t <= .5 ? t * 2 : (t - .5) * 2;
+    const v = from.map((c, i) => Math.round(c + (to[i] - c) * local));
     return `rgb(${v[0]},${v[1]},${v[2]})`;
   }
 
