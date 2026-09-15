@@ -260,7 +260,7 @@
   }
 
   function setTarget() {
-    state.target = Math.floor(Math.random() * 81) + 10; // 10–90 inclusive
+    state.target = Math.floor(Math.random() * 101); // 0–100 inclusive
     els.targetSwatch.style.background = mixColor(state.target);
   }
 
@@ -479,14 +479,15 @@
   }
 
   function scoreRound() {
-    const target = clamp(Number(state.target) || 50, 10, 90);
+    const targetValue = Number(state.target);
+    const target = clamp(Number.isFinite(targetValue) ? targetValue : 50, 0, 100);
     const actual = clamp(Number(coffeePercent()) || 0, 0, 100);
     const colorDiff = Math.abs(actual - target);
     if (state.overflow) return { color:0, volume:0, points:0, actual, target, colorDiff, fill:fillRatio() };
-    // Color scoring curve: exact/near-exact mixes stay special, a 10pt miss is 80,
-    // and a 30pt-or-more miss is zero. The penalty accelerates as the color drifts away.
-    // score = 100 - (4/3 * diff) - (diff^2 / 15)
-    const colorRaw = totalMl() <= 0 ? 0 : (colorDiff >= 30 ? 0 : 100 - (4 / 3) * colorDiff - (colorDiff * colorDiff) / 15);
+    // Color scoring curve: a 10pt miss is 80, and 40pt or more is the minimum 1 point.
+    // The quadratic curve makes larger misses increasingly costly while preserving a perfect 100.
+    // score = (120000 - 2210*diff - 19*diff^2) / 1200, clamped to a minimum of 1 for non-empty mixes.
+    const colorRaw = totalMl() <= 0 ? 0 : (colorDiff >= 40 ? 1 : (120000 - 2210 * colorDiff - 19 * colorDiff * colorDiff) / 1200);
     const f = clamp(fillRatio(), 0, 1);
     const volumeRaw = 100 * Math.pow(f, 2.25);
     const color = totalMl() <= 0 ? 0 : Math.ceil(clamp(colorRaw, 0, 100));
