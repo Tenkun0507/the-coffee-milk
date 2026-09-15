@@ -440,9 +440,11 @@
   function scoreRound() {
     if (state.overflow) return { color:0, volume:0, points:0, actual:coffeePercent(), fill:fillRatio() };
     const actual = coffeePercent();
-    const error = Math.abs(actual - state.target) / 100;
-    // Strong nonlinear curves, then each component is rounded UP before multiplication.
-    const colorRaw = totalMl() <= 0 ? 0 : 100 * Math.exp(-34 * error * error);
+    const colorDiff = Math.abs(actual - state.target);
+    // Color is now linear: every 1 percentage-point miss costs exactly 1 point.
+    // Example: target 60%, actual 52% -> 92 points.
+    // Component scores are still rounded UP before multiplication.
+    const colorRaw = totalMl() <= 0 ? 0 : Math.max(0, 100 - colorDiff);
     const f = clamp(fillRatio(), 0, 1);
     const volumeRaw = 100 * Math.pow(f, 2.25);
     const color = Math.ceil(clamp(colorRaw, 0, 100));
