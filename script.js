@@ -17,7 +17,9 @@
     coffeeBtn: $('#coffeeBtn'), milkBtn: $('#milkBtn'), vesselArea: $('#vesselArea'), vesselCanvas: $('#vesselCanvas'),
     vesselArt: $('#vesselArt'), liquidMask: $('#liquidMask'), liquid: $('#liquid'), pourStream: $('#pourStream'),
     resultOverlay: $('#resultOverlay'), resultEyebrow: $('#resultEyebrow'), resultTitle: $('#resultTitle'),
-    colorScore: $('#colorScore'), volumeScore: $('#volumeScore'), roundScore: $('#roundScore'), resultNote: $('#resultNote'), colorDebug: $('#colorDebug'), nextBtn: $('#nextBtn'),
+    colorScore: $('#colorScore'), volumeScore: $('#volumeScore'), roundScore: $('#roundScore'), resultNote: $('#resultNote'), colorDebug: $('#colorDebug'),
+    resultTargetSwatch: $('#resultTargetSwatch'), resultActualSwatch: $('#resultActualSwatch'),
+    resultTargetCoffee: $('#resultTargetCoffee'), resultActualCoffee: $('#resultActualCoffee'), resultColorDiff: $('#resultColorDiff'), nextBtn: $('#nextBtn'),
     finalScore: $('#finalScore'), roundBreakdown: $('#roundBreakdown'), againBtn: $('#againBtn')
   };
 
@@ -93,6 +95,7 @@
       start:'START', titleBtn:'TITLE', target:'TARGET', totalScoreLabel:'TOTAL SCORE',
       coffee:'COFFEE', milk:'MILK', oneUseSmall:'1 USE',
       color:'COLOR', volume:'VOLUME', roundScoreLabel:'ROUND SCORE',
+      resultTarget:'TARGET', resultActual:'YOUR MIX', diffLabel:'DIFFERENCE',
       nextRound:'NEXT ROUND', finalResult:'FINAL RESULT',
       finalKicker:'5 ROUNDS COMPLETE', finalScoreLabel:'FINAL SCORE', playAgain:'PLAY AGAIN',
       soundOn:'SOUND ON', soundOff:'SOUND OFF',
@@ -117,6 +120,7 @@
       start:'はじめる', titleBtn:'タイトル', target:'見本', totalScoreLabel:'合計スコア',
       coffee:'コーヒー', milk:'牛乳', oneUseSmall:'1回のみ',
       color:'色', volume:'量', roundScoreLabel:'ラウンドスコア',
+      resultTarget:'目標', resultActual:'実際', diffLabel:'差',
       nextRound:'次のラウンド', finalResult:'最終結果',
       finalKicker:'5ラウンド終了', finalScoreLabel:'最終スコア', playAgain:'もう一度遊ぶ',
       soundOn:'音声 ON', soundOff:'音声 OFF',
@@ -151,13 +155,21 @@
 
   function colorDebugText(s) {
     if (!s) return '';
+    const diff = Number.isFinite(s.colorDiff) ? s.colorDiff : 0;
+    if (currentLang === 'ja') return `差 ${diff.toFixed(1)}pt`;
+    return `Difference ${diff.toFixed(1)}pt`;
+  }
+
+  function updateResultColorComparison(s) {
+    if (!s) return;
     const target = Number.isFinite(s.target) ? s.target : state.target;
     const actual = Number.isFinite(s.actual) ? s.actual : 0;
     const diff = Number.isFinite(s.colorDiff) ? s.colorDiff : Math.abs(actual - target);
-    if (currentLang === 'ja') {
-      return `色チェック：目標 ${target.toFixed(1)}% ／ 実際 ${actual.toFixed(1)}% ／ 差 ${diff.toFixed(1)}pt → ${s.color}点`;
-    }
-    return `Color check: target ${target.toFixed(1)}% / actual ${actual.toFixed(1)}% / diff ${diff.toFixed(1)}pt → ${s.color} pts`;
+    if (els.resultTargetSwatch) els.resultTargetSwatch.style.background = mixColor(target);
+    if (els.resultActualSwatch) els.resultActualSwatch.style.background = mixColor(actual);
+    if (els.resultTargetCoffee) els.resultTargetCoffee.textContent = currentLang === 'ja' ? `コーヒー ${target.toFixed(1)}%` : `Coffee ${target.toFixed(1)}%`;
+    if (els.resultActualCoffee) els.resultActualCoffee.textContent = currentLang === 'ja' ? `コーヒー ${actual.toFixed(1)}%` : `Coffee ${actual.toFixed(1)}%`;
+    if (els.resultColorDiff) els.resultColorDiff.textContent = currentLang === 'ja' ? `差 ${diff.toFixed(1)}pt` : `Difference ${diff.toFixed(1)}pt`;
   }
 
   function updateSoundLabels() {
@@ -188,6 +200,7 @@
       els.resultTitle.textContent = state.overflow ? tr('overflowTitle') : tr('result');
       els.resultNote.textContent = tr(resultNoteKey(s));
       if (els.colorDebug) els.colorDebug.textContent = colorDebugText(s);
+      updateResultColorComparison(s);
     }
     if (els.finalScreen.classList.contains('active')) {
       els.finalScore.textContent = fmt(state.totalScore);
@@ -470,13 +483,13 @@
     const actual = clamp(Number(coffeePercent()) || 0, 0, 100);
     const colorDiff = Math.abs(actual - target);
     if (state.overflow) return { color:0, volume:0, points:0, actual, target, colorDiff, fill:fillRatio() };
-    // Linear color score: every 1 percentage-point miss costs exactly 1 point.
-    // Because targets are 10–90% and actual is clamped to 0–100%, a non-empty
-    // drink cannot produce an impossible out-of-range value.
-    const colorRaw = totalMl() <= 0 ? 0 : 100 - colorDiff;
+    // Color scoring curve: exact/near-exact mixes stay special, a 10pt miss is 80,
+    // and a 30pt-or-more miss is zero. The penalty accelerates as the color drifts away.
+    // score = 100 - (4/3 * diff) - (diff^2 / 15)
+    const colorRaw = totalMl() <= 0 ? 0 : (colorDiff >= 30 ? 0 : 100 - (4 / 3) * colorDiff - (colorDiff * colorDiff) / 15);
     const f = clamp(fillRatio(), 0, 1);
     const volumeRaw = 100 * Math.pow(f, 2.25);
-    const color = totalMl() <= 0 ? 0 : Math.ceil(clamp(colorRaw, 10, 100));
+    const color = totalMl() <= 0 ? 0 : Math.ceil(clamp(colorRaw, 0, 100));
     const volume = Math.ceil(clamp(volumeRaw, 0, 100));
     const points = color * volume;
     return { color, volume, points, actual, target, colorDiff, fill:f, colorRaw, volumeRaw };
@@ -496,6 +509,7 @@
     els.roundScore.textContent = fmt(s.points);
     els.resultNote.textContent = tr(resultNoteKey(s));
     if (els.colorDebug) els.colorDebug.textContent = colorDebugText(s);
+    updateResultColorComparison(s);
     els.resultOverlay.classList.add('show'); els.resultOverlay.setAttribute('aria-hidden','false');
     if (!state.overflow && s.points > 0) playResult(s.points);
   }

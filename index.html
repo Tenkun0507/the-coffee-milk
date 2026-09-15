@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="theme-color" content="#76cbd2" />
   <title>THE COFFEE MILK</title>
-  <link rel="stylesheet" href="style.css?v=20260915-color2" />
+  <link rel="stylesheet" href="style.css?v=20260915-scorecurve2" />
 </head>
 <body>
   <div id="app" class="app">
@@ -113,6 +113,20 @@
             <div><span data-i18n="color">COLOR</span><b id="colorScore">0</b></div>
             <div><span data-i18n="volume">VOLUME</span><b id="volumeScore">0</b></div>
           </div>
+          <div class="result-color-compare" aria-label="Color comparison">
+            <div class="result-color-item">
+              <span class="result-color-label" data-i18n="resultTarget">TARGET</span>
+              <div class="result-color-frame"><div id="resultTargetSwatch" class="result-color-swatch"></div></div>
+              <b id="resultTargetCoffee" class="result-coffee-ratio">Coffee 50.0%</b>
+            </div>
+            <div class="result-color-vs" aria-hidden="true">↔</div>
+            <div class="result-color-item">
+              <span class="result-color-label" data-i18n="resultActual">YOUR MIX</span>
+              <div class="result-color-frame"><div id="resultActualSwatch" class="result-color-swatch"></div></div>
+              <b id="resultActualCoffee" class="result-coffee-ratio">Coffee 50.0%</b>
+            </div>
+          </div>
+          <div id="resultColorDiff" class="result-color-diff">Difference 0.0pt</div>
           <div class="round-score-label" data-i18n="roundScoreLabel">ROUND SCORE</div>
           <div id="roundScore" class="round-score">0</div>
           <p id="resultNote" class="result-note"></p>
@@ -139,6 +153,6 @@
     </section>
   </div>
 
-  <script src="script.js?v=20260915-color2"></script>
+  <script src="script.js?v=20260915-scorecurve2"></script>
 </body>
 </html>
