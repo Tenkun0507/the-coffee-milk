@@ -429,7 +429,7 @@
     els.pourStream.className = `pour-stream active ${type}`;
     updateStreamGeometry();
     lastTime = performance.now();
-    updateWarning(fillRatio());
+    updateWarning();
     raf = requestAnimationFrame(tickPour);
     playClick(type);
   }
@@ -446,7 +446,7 @@
     if (!lastPaint || now - lastPaint >= PAINT_INTERVAL) {
       lastPaint = now;
       updateLiquid();
-      updateWarning(f);
+      updateWarning();
     }
 
     if (f > overflowLimit()) {
@@ -559,9 +559,11 @@
   function playOverflow() { tone(170,.16,.05,'sawtooth'); tone(105,.23,.045,'sawtooth',.09); }
   function playResult(points) { const high = points > 8400; tone(high?523:392,.09,.032,'triangle'); tone(high?659:494,.11,.03,'triangle',.08); tone(high?784:587,.14,.025,'triangle',.16); }
 
-  function updateWarning(fill) {
-    // A quiet continuous pitch meter: low from an empty vessel, rising smoothly
-    // all the way to full. This is especially important for the blind final round.
+  function updateWarning() {
+    // Pitch follows the *displayed liquid-surface height* linearly.
+    // Empty = 220 Hz, full = 1100 Hz. Because visualFillRatio() is also used
+    // to draw the liquid, shaped vessels and the blind round stay in sync
+    // with what the player would see/hear.
     if (!soundOn || !audio || !activePour) { stopWarning(); return; }
     if (!warningOsc) {
       warningOsc = audio.createOscillator(); warningGain = audio.createGain();
@@ -569,10 +571,11 @@
       warningOsc.type = 'triangle'; warningGain.gain.value = .040;
       warningOsc.connect(warningGain); warningGain.connect(audio.destination); warningOsc.start();
     }
-    const p = clamp(fill, 0, 1);
-    warningOsc.frequency.setTargetAtTime(180 + Math.pow(p, 1.25) * 1320, audio.currentTime, .022);
-    // Make the empty/early-pour region clearly audible instead of fading in quietly.
-    warningGain.gain.setTargetAtTime(.052 + p * .026, audio.currentTime, .018);
+    const liquidHeight = clamp(visualFillRatio(), 0, 1);
+    const pitchHz = 220 + liquidHeight * (1100 - 220);
+    warningOsc.frequency.setTargetAtTime(pitchHz, audio.currentTime, .018);
+    // Keep the start of the pour clearly audible, with a modest lift toward full.
+    warningGain.gain.setTargetAtTime(.052 + liquidHeight * .026, audio.currentTime, .018);
   }
 
   function stopWarning() {
